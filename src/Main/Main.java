@@ -1,44 +1,66 @@
 package Main;
 
 import javafx.application.Application;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.ToolBar;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import jfxtras.labs.scene.control.window.Window;
 
-public class Main extends Application{
+public class Main extends Application implements EventHandler<ActionEvent>{
 	Scene sc;
-	BorderPane bp;
+	BorderPane bp, bp2;
 	GridPane gp;
-	VBox vb;
-	HBox hb, hb2;
+	StackPane sp, sp2;
+	VBox vb, vb2;
+	HBox hb, hb2, hb3;
 	Button logoutBT, addItem, deleteItem, checkout;
 	Label yourCartLabel, yourCartDescLabel, greetLabel, cartName, cartPrice, price;
 	ToolBar tb;
-	Region space, space2, space3, space4, space5;
-
+	Region space, space2, space3, space4, space5, space6, space7;
+	Alert deleteAlert, checkAlert;
+	Window addWindow;
 	Juice j = new Juice(null, null, null, 0);
 	ListView<String> juiceList;
+	
+	// =========================
+	
+	Label juiceLabel, juicePrice, juiceDesc, juiceQty, juiceTotal;
+	Spinner<Integer> qtySpinner;
+	ComboBox<String> juiceTypeName;
+	Button addItemButton;
+	Background background;
+	
 
 
 	void initialize() {
-		// scene & layout
+		// scene & layout & window
 		bp = new BorderPane();
 		gp = new GridPane();
+		sp = new StackPane();
 		vb = new VBox();
 		hb = new HBox();
 		hb2 = new HBox();
@@ -52,9 +74,7 @@ public class Main extends Application{
 		space3 = new Region();
 		space3.setMinWidth(12);
 		space4 = new Region();
-		space4.setMaxWidth(5);
 		space5 = new Region();
-		space5.setMinWidth(5);
 
 		// button
 		logoutBT = new Button("Logout");
@@ -82,12 +102,70 @@ public class Main extends Application{
 		
 		// list view
 		juiceList = new ListView<String>();
+		juiceList.setPrefHeight(300);
+		juiceList.setPrefWidth(600);
+		juiceList.setPadding(new Insets(20, 20, 20, 20));
+		
+		// window
+		addWindow = new Window("Add new item");
+		addWindow.setMaxHeight(400);
+		addWindow.setMaxWidth(800);
+		
+		// ======================================
+		// background
+//				background = new Background(new BackgroundFill(Color.WHITE, null, null));
+//				// scene & pane & window
+//				addWindow = new Window("Add new item");
+//				addWindow.setPrefHeight(500);
+//				addWindow.setPrefWidth(1000);
+//				addWindow.setBackground(background);
+//				bp2 = new BorderPane();
+//				sp = new StackPane();
+//				vb2 = new VBox();
+//				hb3= new HBox();
+//				sc = new Scene(sp, 600, 700);
+				
+				// region/spacing
+				space6 = new Region();
+				space7 = new Region();
+				
+				// label
+				juiceLabel = new Label("Juice: ");
+				juiceLabel.setFont(Font.font(null, FontWeight.NORMAL, 15));
+				juicePrice = new Label("Juice Price: ");
+				juicePrice.setFont(Font.font(null, FontWeight.NORMAL, 15));
+				juicePrice.setPadding(new Insets(10, 10, 10, 10));
+				juiceDesc = new Label("Description: ");
+				juiceDesc.setFont(Font.font(null, FontWeight.SEMI_BOLD, 15));
+				juiceQty = new Label("Quantity: ");
+				juiceQty.setFont(Font.font(null, FontWeight.NORMAL, 15));
+				juiceTotal = new Label("Total Price: ");
+				juiceTotal.setFont(Font.font(null, FontWeight.NORMAL, 15));
+				
+				// spinner
+				qtySpinner = new Spinner<Integer>();
+				qtySpinner.setPrefHeight(30);
+				qtySpinner.setPrefWidth(230);
+				
+				// combo box
+				juiceTypeName = new ComboBox<String>();
+				juiceTypeName.setPrefHeight(25);
+				juiceTypeName.setPrefWidth(240);
+				juiceTypeName.getItems().add("Avocado Avalanches");
+				juiceTypeName.getItems().add("Apple Adventure");
+				juiceTypeName.getItems().add("Berry Blast");
+				juiceTypeName.getItems().add("Mango Tango");
+				juiceTypeName.getItems().add("Citrus Crush");
+				juiceTypeName.getItems().add("Watermelon Wave");
+				juiceTypeName.getItems().add("Pear Pepper");
+				
+				// button
+				addItemButton = new Button("Add Item");
+				addItemButton.setPrefHeight(3);
+				addItemButton.setPrefWidth(98);
 	}
 
 	void layout() {
-//		bp.setCenter(gp);
-//		gp.add(hb2, 0, 0);
-		
 		vb.getChildren().addAll(yourCartLabel);
 		vb.setAlignment(Pos.CENTER);
 		vb.setSpacing(10);
@@ -101,11 +179,14 @@ public class Main extends Application{
 			vb.setAlignment(Pos.CENTER);
 			vb.setSpacing(14);
 		}else {
-			vb.getChildren().add(juiceList);
+			hb2.getChildren().addAll(space4, juiceList, space5);
+			hb2.setAlignment(Pos.CENTER);
+			
+			vb.getChildren().add(hb2);
 			
 			vb.getChildren().add(price);
 			vb.setAlignment(Pos.CENTER);
-			vb.setSpacing(15);
+			vb.setSpacing(15);	
 		}
 		
 		hb.getChildren().addAll(addItem, deleteItem, checkout);
@@ -113,24 +194,74 @@ public class Main extends Application{
 		hb.setSpacing(12);
 		vb.getChildren().add(hb);
 		
-		hb2.getChildren().addAll(vb);
-		hb2.setAlignment(Pos.CENTER);;
-		
 		bp.setTop(tb);
-		bp.setCenter(hb2);
+		bp.setCenter(vb);
+	}
+	
+	void windowLayout() {
+//		addWindow.getContentPane().getChildren().add(vb2);
+		
+		// nama juice
+		vb2.getChildren().add(juiceLabel);
+		vb2.setSpacing(8);
+		
+		// combo box + harga juice
+		hb3.getChildren().addAll(space6, juiceTypeName, juicePrice, space7);
+		hb3.setAlignment(Pos.CENTER);
+		vb2.getChildren().add(hb3);
+		vb2.setSpacing(8);
+		
+		// desc juice
+		vb2.getChildren().add(juiceDesc);
+		vb2.setSpacing(8);
+		
+		// quantity juice
+		vb2.getChildren().add(juiceQty);
+		vb2.setSpacing(8);
+		
+		// spiner
+		vb2.getChildren().add(qtySpinner);
+		SpinnerValueFactory<Integer> spinnerFact = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 100, 1);
+		qtySpinner.setValueFactory(spinnerFact);
+		
+		vb2.getChildren().add(juiceTotal);
+		vb2.setSpacing(8);
+		vb2.getChildren().add(addItemButton);
+		
+		vb2.setAlignment(Pos.CENTER);
 	}
 
 	void initTool() {
 		tb.getItems().addAll(space2, logoutBT, space, greetLabel, space3);
 		tb.setPrefHeight(22);
 	}
+	
+	void initAlert() {
+		deleteAlert = new Alert(AlertType.ERROR);
+		checkAlert = new Alert(AlertType.ERROR);
+		
+		deleteAlert.setHeaderText("Error");
+		deleteAlert.setContentText("Please choose which juice to delete");
+		deleteAlert.getDialogPane().getScene().getWindow();
+		
+		checkAlert.setHeaderText("Error");
+		checkAlert.setContentText("Your cart is empty");
+	}
+	
+	void setEventHandler() {
+		addItem.setOnAction(this);
+		deleteItem.setOnAction(this);
+		checkout.setOnAction(this);
+	}
 
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		initialize();
+		initAlert();
 		initTool();
 		layout();
+		setEventHandler();
 		primaryStage.setScene(sc);
 		primaryStage.setTitle("NJuice");
 		primaryStage.show();
@@ -139,6 +270,52 @@ public class Main extends Application{
 	public static void main(String[] args) {
 		launch(args);
 
+	}
+	
+	public void openSecondaryWindow() {
+		background = new Background(new BackgroundFill(Color.WHITE, null, null));
+		addWindow = new Window("Add new item");
+		addWindow.setPrefHeight(500);
+		addWindow.setPrefWidth(1000);
+		addWindow.setBackground(background);
+		bp2 = new BorderPane();
+		sp = new StackPane();
+		vb2 = new VBox();
+		hb3= new HBox();
+		
+		windowLayout();
+		
+		addWindow.getContentPane().getChildren().add(vb2);
+		
+		bp2.setCenter(addWindow);
+		bp2.setAlignment(vb2, Pos.TOP_CENTER);
+		
+		
+		Stage secondStage = new Stage();
+		secondStage.setScene(new Scene(bp2, 600, 700));
+		secondStage.showAndWait();
+		
+	}
+	
+	@Override
+	public void handle(ActionEvent event) {
+		if (event.getSource() == addItem) {
+			openSecondaryWindow();
+		}else if (event.getSource() == deleteItem) {
+			if (juiceList.getSelectionModel().getSelectedItem() != null) {
+				juiceList.getItems().remove(juiceList.getSelectionModel().getSelectedItem());
+			}else {
+				deleteAlert.show();
+				return;
+			}
+		}else if (event.getSource() == checkout) {
+			if (juiceList.getItems().isEmpty()) {
+				checkAlert.show();
+				return;
+			}else {
+				// checkout page
+			}
+		}
 	}
 
 }
