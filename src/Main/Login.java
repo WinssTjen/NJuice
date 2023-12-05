@@ -70,7 +70,7 @@ public class Login extends Application implements EventHandler<ActionEvent>{
 
 		titleLabel = new Label("Login");
 		titleLabel.setFont(Font.font(null,FontWeight.BOLD,25));
-		appLabel = new Label("NJuice Bersama");
+		appLabel = new Label("NJuice");
 		usernameLabel = new Label("Username");
 		passwordLabel = new Label("Password");
 
