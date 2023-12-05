@@ -43,7 +43,7 @@ public class CustHome extends Application implements EventHandler<ActionEvent>{
 	Region space, space2, space3, space4, space5, space6, space7;
 	Alert deleteAlert, checkAlert;
 	Window addWindow;
-	Juice j = new Juice(null, null, null, 0);
+	Juice j = new Juice(null, null, 0, null);
 	ListView<String> juiceList;
 
 	// =========================
