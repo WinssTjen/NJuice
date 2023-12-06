@@ -92,6 +92,7 @@ public class CustHome implements EventHandler<ActionEvent>{
 
 		// label
 		greetLabel = new Label("Hi, " + "Winsen"/* username */);
+		greetLabel.setFont(Font.font(null, FontWeight.BOLD, 10));
 		yourCartLabel = new Label("Your Cart");
 		yourCartLabel.setFont(Font.font(null, FontWeight.BOLD, 50));
 		yourCartDescLabel = new Label("Your cart is empty, try adding items!");
