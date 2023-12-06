@@ -239,19 +239,6 @@ public class CustHome implements EventHandler<ActionEvent>{
 		checkout.setOnAction(this);
 		logoutBT.setOnAction(this);
 	}
-
-
-//	@Override
-//	public void start(Stage primaryStage) throws Exception {
-//		initialize();
-//		initAlert();
-//		initTool();
-//		layout();
-//		setEventHandler();
-//		primaryStage.setScene(sc);
-//		primaryStage.setTitle("NJuice");
-//		primaryStage.show();
-//	}
 	
 	public CustHome(Stage primaryStage) {
 		initialize();
@@ -307,10 +294,16 @@ public class CustHome implements EventHandler<ActionEvent>{
 				checkAlert.show();
 				return;
 			}else {
-				// checkout page
+				Checkout ck = new Checkout(primaryStage);
 			}
 		}else if (event.getSource() == logoutBT) {
-			Login lg = new Login(primaryStage);
+			Login lg = new Login();
+			
+			try {
+				lg.start(primaryStage);
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
 		}
 	}
 

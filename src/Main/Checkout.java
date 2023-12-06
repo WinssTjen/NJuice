@@ -14,7 +14,7 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import jfxtras.labs.scene.control.window.Window;
 
-public class Checkout extends Application implements EventHandler<ActionEvent> {
+public class Checkout implements EventHandler<ActionEvent> {
 	
 	Scene scene;
 	BorderPane bp;
@@ -27,6 +27,7 @@ public class Checkout extends Application implements EventHandler<ActionEvent> {
 	ToolBar tb;
 	Region space, space1, space2, space3;
 	Alert success, fail;
+	Stage primaryStage;
 //	Window success, fail;
 	
 	public void init() {
@@ -130,29 +131,38 @@ public class Checkout extends Application implements EventHandler<ActionEvent> {
 	}
 	
 	public void setEventHandler() {
-		
 		checkOut.setOnAction(this);
 		cancel.setOnAction(this);
-		
+		logOut.setOnAction(this);
 	}
 	
-	public static void main(String[] args) {
-		launch(args);
+//	public static void main(String[] args) {
+//		launch(args);
+//
+//	}
 
-	}
-
-	@Override
-	public void start(Stage primaryStage) throws Exception {
-
+//	@Override
+//	public void start(Stage primaryStage) throws Exception {
+//
+//		init();
+//		addComp();
+//		initAlert();
+//		setEventHandler();
+//
+//		primaryStage.setScene(scene);
+//		primaryStage.setTitle("Tes");
+//		primaryStage.show();
+//		
+//	}
+	
+	public Checkout(Stage primaryStage) {
 		init();
 		addComp();
 		initAlert();
 		setEventHandler();
 
 		primaryStage.setScene(scene);
-		primaryStage.setTitle("Tes");
 		primaryStage.show();
-		
 	}
 
 	@Override
@@ -167,6 +177,13 @@ public class Checkout extends Application implements EventHandler<ActionEvent> {
 			fail.show();
 			return;
 			
+		}else if (event.getSource() == logOut) {
+			Login lg = new Login();
+			try {
+				lg.start(primaryStage);
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
 		}
 		
 	}
