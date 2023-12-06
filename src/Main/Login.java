@@ -55,7 +55,7 @@ public class Login extends Application implements EventHandler<ActionEvent>{
 
 		//		Login
 		loginBp = new BorderPane();
-		loginScene = new Scene(loginBp, 1000, 500);
+		loginScene = new Scene(loginBp, 1000, 750);
 		loginContainer = new GridPane();
 
 		menuBar = new MenuBar();
@@ -138,7 +138,6 @@ public class Login extends Application implements EventHandler<ActionEvent>{
 
 	public static void main(String[] args) {
 		launch(args);
-
 	}
 
 
@@ -163,9 +162,12 @@ public class Login extends Application implements EventHandler<ActionEvent>{
 			Regist regist = new Regist(primaryStage);
 		} else if (usernameField.getText().isEmpty() || passwordField.getText().isEmpty()) {
 			errorLabel.setText("Credentials Failed!");
-		}else if (usernameField.getText().equals(null) && passwordField.getText().equals(null)) {
+		}
+		
+		if (usernameField.getText().equals("customer") && passwordField.getText().equals("user123")) {
+			CustHome ch = new CustHome(primaryStage);
+		}else if (usernameField.getText().equals("admin") && passwordField.getText().equals("admin123")) {
 //			lanjut ke dashboard kalo admin ke dashboard admin
-//			lanjut ke dashboard kalo customer ke dashboard customer
 		}
 
 

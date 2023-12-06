@@ -50,7 +50,7 @@ public class Regist implements EventHandler<ActionEvent>{
 	void initialize() {
 
 		regisBp = new BorderPane();
-		registScene = new Scene(regisBp, 1000, 500);
+		registScene = new Scene(regisBp, 1000, 750);
 		regisContainer = new GridPane();
 
 		menuBar = new MenuBar();
@@ -152,8 +152,6 @@ public class Regist implements EventHandler<ActionEvent>{
 		primaryStage.setScene(registScene);
 		primaryStage.show();
 	}
-
-	
 
 	@Override
 	public void handle(ActionEvent event) {

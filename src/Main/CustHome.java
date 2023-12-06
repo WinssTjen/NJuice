@@ -30,7 +30,7 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import jfxtras.labs.scene.control.window.Window;
 
-public class CustHome extends Application implements EventHandler<ActionEvent>{
+public class CustHome implements EventHandler<ActionEvent>{
 	Scene sc;
 	BorderPane bp, bp2;
 	GridPane gp;
@@ -53,6 +53,7 @@ public class CustHome extends Application implements EventHandler<ActionEvent>{
 	ComboBox<String> juiceTypeName;
 	Button addItemButton;
 	Background background;
+	private Stage primaryStage;
 
 
 
@@ -236,24 +237,33 @@ public class CustHome extends Application implements EventHandler<ActionEvent>{
 		addItem.setOnAction(this);
 		deleteItem.setOnAction(this);
 		checkout.setOnAction(this);
+		logoutBT.setOnAction(this);
 	}
 
 
-	@Override
-	public void start(Stage primaryStage) throws Exception {
+//	@Override
+//	public void start(Stage primaryStage) throws Exception {
+//		initialize();
+//		initAlert();
+//		initTool();
+//		layout();
+//		setEventHandler();
+//		primaryStage.setScene(sc);
+//		primaryStage.setTitle("NJuice");
+//		primaryStage.show();
+//	}
+	
+	public CustHome(Stage primaryStage) {
 		initialize();
 		initAlert();
 		initTool();
 		layout();
 		setEventHandler();
+		
+		this.primaryStage = primaryStage;
+		
 		primaryStage.setScene(sc);
-		primaryStage.setTitle("NJuice");
 		primaryStage.show();
-	}
-
-	public static void main(String[] args) {
-		launch(args);
-
 	}
 
 	public void openSecondaryWindow() {
@@ -299,6 +309,8 @@ public class CustHome extends Application implements EventHandler<ActionEvent>{
 			}else {
 				// checkout page
 			}
+		}else if (event.getSource() == logoutBT) {
+			Login lg = new Login(primaryStage);
 		}
 	}
 
