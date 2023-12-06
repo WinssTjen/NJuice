@@ -248,7 +248,6 @@ public class CustHome implements EventHandler<ActionEvent>{
 		setEventHandler();
 		
 		this.primaryStage = primaryStage;
-		
 		primaryStage.setScene(sc);
 		primaryStage.show();
 	}

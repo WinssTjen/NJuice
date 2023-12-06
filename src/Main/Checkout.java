@@ -44,9 +44,9 @@ public class Checkout implements EventHandler<ActionEvent> {
 		// Label
 		
 		check = new Label("Checkout");
-		check.setStyle("-fx-font-size: 28pt; -fx-font-weight: bold;");
+		check.setStyle("-fx-font-size: 40pt; -fx-font-weight: bold;");
 		hi = new Label("Hi, Winsen");
-		hi.setStyle("-fx-font-size: 8pt; -fx-font-weight: bold;");
+//		hi.setStyle("-fx-font-size: 8pt; -fx-font-weight: bold;");
 //		hi.setFont(Font.font("Arial", FontWeight.BOLD, 14));
 		item1 = new Label("1x Avocado Avalanches	[1 x Rp.23500,- = Rp.23500,-]");
 		item2 = new Label("3x Berry Blast	[3 x Rp.24500,- = Rp.73500,-]");
@@ -64,6 +64,7 @@ public class Checkout implements EventHandler<ActionEvent> {
 		// Button
 		
 		logOut = new Button("Logout");
+		logOut.setPadding(new Insets(5));
 		cancel = new Button("Cancel");
 		cancel.setMinHeight(40);
 		cancel.setMinWidth(70);
@@ -160,7 +161,8 @@ public class Checkout implements EventHandler<ActionEvent> {
 		addComp();
 		initAlert();
 		setEventHandler();
-
+		
+		this.primaryStage = primaryStage;
 		primaryStage.setScene(scene);
 		primaryStage.show();
 	}
@@ -173,9 +175,8 @@ public class Checkout implements EventHandler<ActionEvent> {
 			return;			
 			
 		} else if (event.getSource() == cancel) {
-			
-			fail.show();
-			return;
+//			fail.show();
+			CustHome ch = new CustHome(primaryStage);
 			
 		}else if (event.getSource() == logOut) {
 			Login login = new Login();

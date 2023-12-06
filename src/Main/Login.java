@@ -150,7 +150,6 @@ public class Login extends Application implements EventHandler<ActionEvent>{
 		setEvent();
 
 		this.primaryStage = primaryStage;
-
 		primaryStage.setScene(loginScene);
 		primaryStage.show();
 
