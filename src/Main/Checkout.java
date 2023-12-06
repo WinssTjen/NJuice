@@ -34,7 +34,7 @@ public class Checkout implements EventHandler<ActionEvent> {
 
 		// Pane
 		bp = new BorderPane();
-		scene = new Scene(bp, 750, 500);
+		scene = new Scene(bp, 1000, 750);
 		isi = new VBox();
 		vb = new VBox();
 		radio = new HBox();
@@ -45,7 +45,7 @@ public class Checkout implements EventHandler<ActionEvent> {
 		
 		check = new Label("Checkout");
 		check.setStyle("-fx-font-size: 28pt; -fx-font-weight: bold;");
-		hi = new Label("Hi, Evan");
+		hi = new Label("Hi, Winsen");
 		hi.setStyle("-fx-font-size: 8pt; -fx-font-weight: bold;");
 //		hi.setFont(Font.font("Arial", FontWeight.BOLD, 14));
 		item1 = new Label("1x Avocado Avalanches	[1 x Rp.23500,- = Rp.23500,-]");
