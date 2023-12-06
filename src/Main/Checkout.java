@@ -178,9 +178,9 @@ public class Checkout implements EventHandler<ActionEvent> {
 			return;
 			
 		}else if (event.getSource() == logOut) {
-			Login lg = new Login();
+			Login login = new Login();
 			try {
-				lg.start(primaryStage);
+				login.start(primaryStage);
 			} catch (Exception e) {
 				// TODO: handle exception
 			}
