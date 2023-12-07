@@ -1,6 +1,5 @@
 package Main;
 
-import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -12,7 +11,6 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import jfxtras.labs.scene.control.window.Window;
 
 public class Checkout implements EventHandler<ActionEvent> {
 	
@@ -46,6 +44,7 @@ public class Checkout implements EventHandler<ActionEvent> {
 		check = new Label("Checkout");
 		check.setFont(Font.font(null, FontWeight.BOLD, 50));
 		hi = new Label("Hi, Winsen");
+		hi.setFont(Font.font(null, FontWeight.BOLD, 10));
 //		hi.setStyle("-fx-font-size: 8pt; -fx-font-weight: bold;");
 //		hi.setFont(Font.font("Arial", FontWeight.BOLD, 14));
 		item1 = new Label("1x Avocado Avalanches	[1 x Rp.23500,- = Rp.23500,-]");
