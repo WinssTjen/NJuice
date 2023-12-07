@@ -1,6 +1,5 @@
 package Main;
 
-import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -19,7 +18,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
-public class Login extends Application implements EventHandler<ActionEvent>{
+public class Login implements EventHandler<ActionEvent>{
 
 	//	Scene & Layout
 	Scene loginScene;
@@ -55,7 +54,7 @@ public class Login extends Application implements EventHandler<ActionEvent>{
 
 		//		Login
 		loginBp = new BorderPane();
-		loginScene = new Scene(loginBp, 1000, 750);
+		loginScene = new Scene(loginBp, 1000, 500);
 		loginContainer = new GridPane();
 
 		menuBar = new MenuBar();
@@ -136,13 +135,14 @@ public class Login extends Application implements EventHandler<ActionEvent>{
 	}
 
 
-	public static void main(String[] args) {
-		launch(args);
+	
+	void show() {
+		primaryStage.setScene(loginScene);
+		primaryStage.show();
+		
 	}
 
-
-	@Override
-	public void start(Stage primaryStage) throws Exception {
+	public Login(Stage primaryStage){
 		initialize();
 		initMenu();
 		login();
@@ -150,8 +150,7 @@ public class Login extends Application implements EventHandler<ActionEvent>{
 		setEvent();
 
 		this.primaryStage = primaryStage;
-		primaryStage.setScene(loginScene);
-		primaryStage.show();
+
 
 	}
 
@@ -159,14 +158,12 @@ public class Login extends Application implements EventHandler<ActionEvent>{
 	public void handle(ActionEvent event) {
 		if (event.getSource() == menuItem2) {
 			Regist regist = new Regist(primaryStage);
+			regist.show();
 		} else if (usernameField.getText().isEmpty() || passwordField.getText().isEmpty()) {
 			errorLabel.setText("Credentials Failed!");
-		}
-		
-		if (usernameField.getText().equals("customer") && passwordField.getText().equals("user123")) {
-			CustHome ch = new CustHome(primaryStage);
-		}else if (usernameField.getText().equals("admin") && passwordField.getText().equals("admin123")) {
+		}else if (usernameField.getText().equals(null) && passwordField.getText().equals(null)) {
 //			lanjut ke dashboard kalo admin ke dashboard admin
+//			lanjut ke dashboard kalo customer ke dashboard customer
 		}
 
 

@@ -1,5 +1,6 @@
 package Main;
 
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -11,6 +12,7 @@ import javafx.stage.Stage;
 
 public class Regist implements EventHandler<ActionEvent>{
 
+
 	// Scene & Layout
 	Scene registScene;
 	BorderPane regisBp;
@@ -21,7 +23,7 @@ public class Regist implements EventHandler<ActionEvent>{
 	MenuItem menuItem1;
 	MenuItem menuItem2;
 
-	
+
 	// VBox
 	VBox vboxRegisterLabel;
 	VBox vboxUsername;
@@ -40,17 +42,18 @@ public class Regist implements EventHandler<ActionEvent>{
 
 	//	- Button
 	Button regisButton;
-	
+
 	// - Checklist
 	CheckBox agreement;
-	
+
 	private Stage primaryStage;
-	
+
+	private static int i = 0;
 
 	void initialize() {
 
 		regisBp = new BorderPane();
-		registScene = new Scene(regisBp, 1000, 750);
+		registScene = new Scene(regisBp, 1000, 500);
 		regisContainer = new GridPane();
 
 		menuBar = new MenuBar();
@@ -63,7 +66,7 @@ public class Regist implements EventHandler<ActionEvent>{
 		vboxRegisterLabel = new VBox(10);
 		vboxRegisterButton = new VBox(50);
 		vboxAgreement = new VBox(50);
-		
+
 		regisTitleLabel = new Label("Register");
 		regisTitleLabel.setFont(Font.font(null,FontWeight.BOLD,25));
 		regisAppLabel = new Label("NJuice");
@@ -78,13 +81,14 @@ public class Regist implements EventHandler<ActionEvent>{
 		regisPasswordField.setPrefWidth(250);
 
 		agreement = new CheckBox();
-		
+
 		errorLabel = new Label();
-		
+
 		regisButton = new Button ("Register");
 
+
 	}
-	
+
 	void initMenu() {
 		menuBar.getMenus().add(menu);
 		menu.getItems().add(menuItem1);
@@ -95,30 +99,30 @@ public class Regist implements EventHandler<ActionEvent>{
 
 
 	void regis() {
-		
+
 		regisTitleLabel.setFont(Font.font(null,FontWeight.BOLD,50));
 		regisAppLabel.setFont(Font.font(null,FontWeight.SEMI_BOLD,15));
-		
-		
+
+
 		vboxRegisterLabel.getChildren().addAll(regisTitleLabel,regisAppLabel);
 		vboxUsername.getChildren().addAll(regisUsernameLabel, regisUsernameField);
 		vboxPassword.getChildren().addAll(regisPasswordLabel, regisPasswordField);
 		vboxAgreement.getChildren().addAll(agreement);
 		errorLabel.setStyle("-fx-text-fill: red");
 		vboxRegisterButton.getChildren().addAll(regisButton);
-		
-		
+
+
 		agreement.setText("I agree to the terms and conditions of NJuice!");
-		
+
 		regisContainer.add(vboxRegisterLabel, 0, 0);
 		regisContainer.add(vboxUsername, 0, 2);
 		regisContainer.add(vboxPassword, 0, 4);
 		regisContainer.add(vboxAgreement, 0, 6);
 		regisContainer.add(errorLabel, 0, 7);
 		regisContainer.add(vboxRegisterButton, 0, 8);
-		
+
 		regisBp.setCenter(regisContainer);
-		
+
 
 	}
 
@@ -133,44 +137,56 @@ public class Regist implements EventHandler<ActionEvent>{
 		vboxRegisterButton.setAlignment(Pos.CENTER);
 
 	}
-	
+
 	void setEvent() {
 		menuItem1.setOnAction(this);
 		menuItem2.setOnAction(this);
 		regisButton.setOnAction(this);
 	}
-	
+
+	void show() {
+		primaryStage.setScene(registScene);
+		primaryStage.show();
+
+	}
+
 	public Regist(Stage primaryStage) {
 		initialize();
 		initMenu();
 		regis();
 		setArrangements();
 		setEvent();
-		
+
 		this.primaryStage = primaryStage;
-		
-		primaryStage.setScene(registScene);
-		primaryStage.show();
+
 	}
+
+
+
+
 
 	@Override
 	public void handle(ActionEvent event) {
 		if(event.getSource() == menuItem1) {
-			Login login = new Login();
-			try {
-				login.start(primaryStage);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			Login login = new Login(primaryStage);
+			login.show();
 		} else if (regisUsernameField.getText().isEmpty() || regisPasswordField.getText().isEmpty()) {
 			errorLabel.setText("Please input all the field");
+		} else if (!agreement.isSelected()){
+			errorLabel.setText("Please click the tnc");
+		} else {
+			i++;
+			String id = String.format("CU%03d", i);
+
+			Login login = new Login(primaryStage);
+			login.show();
+
+
 		}
-		
+
+
+
+
 	}
-
-
-
-
 }
 
