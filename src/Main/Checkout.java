@@ -44,7 +44,7 @@ public class Checkout implements EventHandler<ActionEvent> {
 		// Label
 		
 		check = new Label("Checkout");
-		check.setStyle("-fx-font-size: 40pt; -fx-font-weight: bold;");
+		check.setFont(Font.font(null, FontWeight.BOLD, 50));
 		hi = new Label("Hi, Winsen");
 //		hi.setStyle("-fx-font-size: 8pt; -fx-font-weight: bold;");
 //		hi.setFont(Font.font("Arial", FontWeight.BOLD, 14));
@@ -53,12 +53,16 @@ public class Checkout implements EventHandler<ActionEvent> {
 		item3 = new Label("2x Avocado Avalanches	[2 x Rp.21900,- = Rp.43800,-]");
 		item4 = new Label("3x Avocado Avalanches	[3 x Rp.15400,- = Rp.46200,-]");
 		
+		item1.setFont(Font.font(null, 13));
+		item2.setFont(Font.font(null, 13));
+		item3.setFont(Font.font(null, 13));
+		item4.setFont(Font.font(null, 13));
+		
 		totalPrice = new Label("Total Price: Rp.187000");
-//		totalPrice.setFont(Font.font("Arial" , FontWeight.BOLD, 14));
+		totalPrice.setFont(Font.font(null , 13));
 		isi.setMargin(totalPrice, new Insets(0, 0, 10, 0));
 		payment = new Label("Payment Type:");
-		payment.setStyle("-fx-font-size: 10pt;");
-//		payment.setFont(Font.font("Arial", FontWeight.MEDIUM, 16));
+		payment.setFont(Font.font(null, 18));
 	
 		
 		// Button
@@ -156,6 +160,13 @@ public class Checkout implements EventHandler<ActionEvent> {
 //		
 //	}
 	
+	void show() {
+		primaryStage.setScene(scene);
+		primaryStage.show();
+		
+	}
+	
+	
 	public Checkout(Stage primaryStage) {
 		init();
 		addComp();
@@ -163,8 +174,6 @@ public class Checkout implements EventHandler<ActionEvent> {
 		setEventHandler();
 		
 		this.primaryStage = primaryStage;
-		primaryStage.setScene(scene);
-		primaryStage.show();
 	}
 
 	@Override
@@ -177,14 +186,11 @@ public class Checkout implements EventHandler<ActionEvent> {
 		} else if (event.getSource() == cancel) {
 //			fail.show();
 			CustHome ch = new CustHome(primaryStage);
+			ch.show();
 			
 		}else if (event.getSource() == logOut) {
-			Login login = new Login();
-			try {
-				login.start(primaryStage);
-			} catch (Exception e) {
-				// TODO: handle exception
-			}
+			Login login = new Login(primaryStage);
+			login.show();
 		}
 		
 	}
