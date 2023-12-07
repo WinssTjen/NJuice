@@ -54,7 +54,7 @@ public class Login implements EventHandler<ActionEvent>{
 
 		//		Login
 		loginBp = new BorderPane();
-		loginScene = new Scene(loginBp, 1000, 500);
+		loginScene = new Scene(loginBp, 1000, 750);
 		loginContainer = new GridPane();
 
 		menuBar = new MenuBar();
@@ -97,7 +97,9 @@ public class Login implements EventHandler<ActionEvent>{
 	void login() {
 
 		titleLabel.setFont(Font.font(null,FontWeight.BOLD,50));
-		appLabel.setFont(Font.font(null,FontWeight.SEMI_BOLD,15));
+		appLabel.setFont(Font.font(null,FontWeight.SEMI_BOLD,18));
+		usernameLabel.setFont(Font.font(null, 13));
+		passwordLabel.setFont(Font.font(null, 13));
 
 		errorLabel.setStyle("-fx-text-fill: red");
 
@@ -115,6 +117,9 @@ public class Login implements EventHandler<ActionEvent>{
 		loginContainer.add(vboxLoginButton, 0, 7);
 
 
+		loginButton.setMinHeight(40);
+		loginButton.setMinWidth(70);
+		
 		loginBp.setCenter(loginContainer);
 	}
 
@@ -161,9 +166,14 @@ public class Login implements EventHandler<ActionEvent>{
 			regist.show();
 		} else if (usernameField.getText().isEmpty() || passwordField.getText().isEmpty()) {
 			errorLabel.setText("Credentials Failed!");
-		}else if (usernameField.getText().equals(null) && passwordField.getText().equals(null)) {
-//			lanjut ke dashboard kalo admin ke dashboard admin
-//			lanjut ke dashboard kalo customer ke dashboard customer
+		}
+		
+		if (usernameField.getText().equals("cust") && passwordField.getText().equals("123")) {
+			CustHome custhome = new CustHome(primaryStage);
+			custhome.show();
+		} else if (usernameField.getText().equals("admin") && passwordField.getText().equals("123")) {
+			CustHome custhome = new CustHome(primaryStage);
+			custhome.show();
 		}
 
 

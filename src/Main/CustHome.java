@@ -241,6 +241,13 @@ public class CustHome implements EventHandler<ActionEvent>{
 		logoutBT.setOnAction(this);
 	}
 	
+	void show() {
+		primaryStage.setScene(sc);
+		primaryStage.show();
+		
+	}
+	
+	
 	public CustHome(Stage primaryStage) {
 		initialize();
 		initAlert();
@@ -249,8 +256,6 @@ public class CustHome implements EventHandler<ActionEvent>{
 		setEventHandler();
 		
 		this.primaryStage = primaryStage;
-		primaryStage.setScene(sc);
-		primaryStage.show();
 	}
 
 	public void openSecondaryWindow() {
@@ -295,15 +300,11 @@ public class CustHome implements EventHandler<ActionEvent>{
 				return;
 			}else {
 				Checkout ck = new Checkout(primaryStage);
+				ck.show();
 			}
 		}else if (event.getSource() == logoutBT) {
-			Login lg = new Login();
-			
-			try {
-				lg.start(primaryStage);
-			} catch (Exception e) {
-				// TODO: handle exception
-			}
+			Login login = new Login(primaryStage);
+			login.show();
 		}
 	}
 

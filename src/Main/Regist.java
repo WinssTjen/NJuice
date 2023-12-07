@@ -53,7 +53,7 @@ public class Regist implements EventHandler<ActionEvent>{
 	void initialize() {
 
 		regisBp = new BorderPane();
-		registScene = new Scene(regisBp, 1000, 500);
+		registScene = new Scene(regisBp, 1000, 750);
 		regisContainer = new GridPane();
 
 		menuBar = new MenuBar();
@@ -101,7 +101,12 @@ public class Regist implements EventHandler<ActionEvent>{
 	void regis() {
 
 		regisTitleLabel.setFont(Font.font(null,FontWeight.BOLD,50));
-		regisAppLabel.setFont(Font.font(null,FontWeight.SEMI_BOLD,15));
+		regisAppLabel.setFont(Font.font(null,FontWeight.SEMI_BOLD,18));
+		regisUsernameLabel.setFont(Font.font(null, 13));
+		regisPasswordLabel.setFont(Font.font(null,13));
+		agreement.setFont(Font.font(null, 13));
+		regisButton.setMinHeight(40);
+		regisButton.setMinWidth(70);
 
 
 		vboxRegisterLabel.getChildren().addAll(regisTitleLabel,regisAppLabel);
@@ -110,6 +115,8 @@ public class Regist implements EventHandler<ActionEvent>{
 		vboxAgreement.getChildren().addAll(agreement);
 		errorLabel.setStyle("-fx-text-fill: red");
 		vboxRegisterButton.getChildren().addAll(regisButton);
+		
+		
 
 
 		agreement.setText("I agree to the terms and conditions of NJuice!");
