@@ -164,11 +164,10 @@ public class Login implements EventHandler<ActionEvent>{
 		if (event.getSource() == menuItem2) {
 			Regist regist = new Regist(primaryStage);
 			regist.show();
-		} else if (usernameField.getText().isEmpty() || passwordField.getText().isEmpty()) {
+		} else if ((usernameField.getText().isEmpty() || passwordField.getText().isEmpty()) && event.getSource() != menuItem1) {
 			errorLabel.setText("Credentials Failed!");
 		}
-		
-		if (usernameField.getText().equals("cust") && passwordField.getText().equals("123")) {
+		else if (usernameField.getText().equals("cust") && passwordField.getText().equals("123")) {
 			CustHome custhome = new CustHome(primaryStage);
 			custhome.show();
 		} else if (usernameField.getText().equals("admin") && passwordField.getText().equals("123")) {

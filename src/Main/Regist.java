@@ -174,7 +174,10 @@ public class Regist implements EventHandler<ActionEvent>{
 
 	@Override
 	public void handle(ActionEvent event) {
-		if(event.getSource() == menuItem1) {
+		if (event.getSource() == menuItem2) {
+			return;
+		}
+		else if(event.getSource() == menuItem1) {
 			Login login = new Login(primaryStage);
 			login.show();
 		} else if (regisUsernameField.getText().isEmpty() || regisPasswordField.getText().isEmpty()) {
