@@ -64,6 +64,7 @@ public class ManageProduct implements EventHandler<ActionEvent>{
 	int r = 1;
 	private Stage primaryStage;
 
+
 	public void initialize() {
 		// scene & pane
 		bp = new BorderPane();
@@ -223,6 +224,9 @@ public class ManageProduct implements EventHandler<ActionEvent>{
 		addButton.setOnAction(this);
 		updateButton.setOnAction(this);
 		deleteButton.setOnAction(this);
+		manageProd.setOnAction(this);
+		viewTrans.setOnAction(this);
+		logoutAdmin.setOnAction(this);
 	}
 
 	void initAlert() {
@@ -234,9 +238,22 @@ public class ManageProduct implements EventHandler<ActionEvent>{
 	}
 	
 	public void addData() {
-		
+		String juiceName = inputName.getText();
+		int juicePrice = inputPrice.getValue();
+		String juiceDescription = inputDesc.getText();
+		String juiceID = String.format("ST%03d", juiceData.size()+1);
+		String query = String.format("INSERT INTO msjuice VALUES ('%s', '%s', %d, '%s')", juiceID, juiceName, juicePrice, juiceDescription);
+		con.runUpdate(query);
+		clearForm();
 	}
 	
+	private void clearForm() {
+		inputName.clear();
+		inputDesc.clear();
+		inputPrice.getValueFactory().setValue(10000);
+		
+	}
+
 	public void getData() {
 		String query = "SELECT * FROM msjuice";
 		ResultSet rs = con.runQuery(query);
@@ -257,12 +274,7 @@ public class ManageProduct implements EventHandler<ActionEvent>{
 		productTable.setItems(juiceData);
 	}
 	
-	void show(){
-		primaryStage.setScene(sc);
-		primaryStage.show();
-	}
-	
-	public void manageProduct(Stage primaryStage) {
+	public ManageProduct(Stage primaryStage) {
 		initialize();
 		initMenu();
 		initTable();
@@ -270,15 +282,26 @@ public class ManageProduct implements EventHandler<ActionEvent>{
 		setEventHandler();
 		layout();
 		getData();
-		
+		addData();
+		primaryStage.setScene(sc);
 		this.primaryStage = primaryStage;
-		
 	}
 
+	void show(){
+		primaryStage.show();
+	}
+	
 	@Override
 	public void handle(ActionEvent e) {
-		if(e.getSource() == viewTrans) {
-			ViewTrans vt = new ViewTrans();
+		if(e.getSource() == manageProd) {
+			return;
+		}
+		else if(e.getSource() == viewTrans) {
+			ViewTrans vt = new ViewTrans(primaryStage);
+			vt.show();
+		} else if (e.getSource() == logoutAdmin){
+			Login l = new Login(primaryStage);
+			l.show();
 		}
 		
 		if (e.getSource() == addButton) {

@@ -165,12 +165,7 @@ public class Regist implements EventHandler<ActionEvent>{
 		setEvent();
 
 		this.primaryStage = primaryStage;
-
 	}
-
-
-
-
 
 	@Override
 	public void handle(ActionEvent event) {

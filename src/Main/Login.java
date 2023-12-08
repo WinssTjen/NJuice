@@ -171,8 +171,8 @@ public class Login implements EventHandler<ActionEvent>{
 			CustHome custhome = new CustHome(primaryStage);
 			custhome.show();
 		} else if (usernameField.getText().equals("admin") && passwordField.getText().equals("123")) {
-			CustHome custhome = new CustHome(primaryStage);
-			custhome.show();
+			ViewTrans vt = new ViewTrans(primaryStage);
+			vt.show();
 		}
 
 
