@@ -1,4 +1,7 @@
-import javafx.application.Application;
+package Main;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -11,7 +14,13 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
-public class ViewTrans extends Application implements EventHandler<ActionEvent>{
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import model.DetailTransaction;
+import model.Transaction;
+
+public class ViewTrans implements EventHandler<ActionEvent>{
 
 	Scene scene;
 	BorderPane bp;	
@@ -24,9 +33,15 @@ public class ViewTrans extends Application implements EventHandler<ActionEvent>{
 	Label idTransactionLabel, paymentTypeLabel, usernameLabel, idTransaction2Label, idJuiceLabel, juiceNameLabel, qtyLabel;
 	TableView<Transaction> transaction;
 	TableColumn<Transaction, String> idTransactionColumn, paymentTypeColumn, usernameColumn;
-	TableView<Detail> detail;
-	TableColumn<Detail, String> idTransaction2Column, idJuiceColumn, juiceNameColumn;
-	TableColumn<Detail, Integer> qtyColumn;
+	TableView<DetailTransaction> detail;
+	TableColumn<DetailTransaction, String> idTransaction2Column, idJuiceColumn, juiceNameColumn;
+	TableColumn<DetailTransaction, Integer> qtyColumn;
+	
+	Connect con;
+	private Stage primaryStage;
+	
+	private ObservableList<Transaction> viewTrans = FXCollections.observableArrayList();
+	private ObservableList<DetailTransaction> detailTrans = FXCollections.observableArrayList();
 	
 	void menu() {
 		bp = new BorderPane();
@@ -43,10 +58,14 @@ public class ViewTrans extends Application implements EventHandler<ActionEvent>{
 		menu1.getItems().addAll(mi1, mi2);
 		menu2.getItems().add(mi3);
 		
-		bp.setTop(mb);			
+		bp.setTop(mb);
+		
+		con = new Connect();
+		
 	}
 	
 	void display() {		
+		scene = new Scene(bp, 1000, 750);
 		Label titleLabel = new Label("View Transaction");
 		titleLabel.setFont(Font.font(null, FontWeight.BOLD, 25));
 		
@@ -62,6 +81,7 @@ public class ViewTrans extends Application implements EventHandler<ActionEvent>{
 		paymentTypeColumn = new TableColumn<>("Payment Type");
 		usernameColumn = new TableColumn<>("Username");
         
+		// table 1
         idTransactionColumn.setCellValueFactory(new PropertyValueFactory<>("idTransaction"));
         paymentTypeColumn.setCellValueFactory(new PropertyValueFactory<>("paymentType"));
         usernameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
@@ -70,9 +90,10 @@ public class ViewTrans extends Application implements EventHandler<ActionEvent>{
         paymentTypeColumn.setPrefWidth(120);
         usernameColumn.setPrefWidth(120);
     	
-        transaction = new TableView<>();
+        transaction = new TableView<Transaction>();
         transaction.getColumns().addAll(idTransactionColumn, paymentTypeColumn, usernameColumn);
         
+        // table 2
         idTransaction2Column = new TableColumn<>("Transaction ID");
         idJuiceColumn = new TableColumn<>("Juice ID");
         juiceNameColumn = new TableColumn<>("Juice Name");
@@ -88,7 +109,7 @@ public class ViewTrans extends Application implements EventHandler<ActionEvent>{
         juiceNameColumn.setPrefWidth(120);
         qtyColumn.setPrefWidth(120);
         
-        detail = new TableView<>();
+        detail = new TableView<DetailTransaction>();
         detail.getColumns().addAll(idTransaction2Column, idJuiceColumn, juiceNameColumn, qtyColumn);
         
         Region reg1 = new Region();
@@ -113,23 +134,78 @@ public class ViewTrans extends Application implements EventHandler<ActionEvent>{
 
 		bp.setCenter(vBox);
 	}
-
-	@Override
-	public void start(Stage stage) throws Exception {
+	
+	public void getData() {
+		String query = "SELECT TransactionId, PaymentType, Username FROM transactionheader";
+		ResultSet rs = con.runQuery(query);
+		
+		try {
+			while (rs.next()) {
+				String id = rs.getString("TransactionId");
+				String pay = rs.getString("PaymentType");
+				String username = rs.getString("Username");
+				
+				viewTrans.add(new Transaction(id, pay, username));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		transaction.setItems(viewTrans);
+	}
+	
+	public void getData2(String selectedTrans) {
+		String query = "SELECT th.TransactionId, mj.JuiceId, JuiceName, Quantity FROM transactionheader th JOIN transactiondetail td ON th.TransactionId = td.TransactionId JOIN MsJuice mj ON td.JuiceId = mj.JuiceId WHERE th.TransactionId = '" + selectedTrans + "'";
+		ResultSet rs = con.runQuery(query);
+		
+		try {
+			detailTrans.clear();
+			while (rs.next()) {
+				String id = rs.getString("TransactionId");
+				String jID = rs.getString("JuiceId");
+				String jName = rs.getString("JuiceName");
+				Integer qty = rs.getInt("Quantity");
+				
+				detailTrans.add(new DetailTransaction(id, jID, jName, qty));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		detail.setItems(detailTrans);
+	}
+	
+	void show(){
+		primaryStage.setScene(scene);
+		primaryStage.show();
+	}
+	
+	public ViewTrans(Stage primaryStage) {
 		menu();
 		display();
-		scene = new Scene(bp, 1000, 500);
-		stage.setScene(scene);
-		stage.show();
+		setEventHandler();
+		getData();
+		getData2(null);
+		
+		this.primaryStage = primaryStage;
+		
 	}
-
-
-	public static void main(String[] args) {
-		launch(args);
+	
+	void setEventHandler() {
+		transaction.setOnMouseClicked(e-> {	
+			Transaction selectedTrans = transaction.getSelectionModel().getSelectedItem();
+			if (selectedTrans != null) {
+				getData2(selectedTrans.getIdTransaction());
+			}
+		});
 	}
 	
 	@Override
-	public void handle(ActionEvent arg0) {
+	public void handle(ActionEvent e) {
+		
+		if(e.getSource() == mi2) {
+			
+		}
 		
 	}
 }

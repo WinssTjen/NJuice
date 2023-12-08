@@ -1,5 +1,7 @@
 package Main;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -28,6 +30,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import jfxtras.labs.scene.control.window.Window;
+import model.Juice;
 
 public class CustHome implements EventHandler<ActionEvent>{
 	Scene sc;
@@ -42,7 +45,6 @@ public class CustHome implements EventHandler<ActionEvent>{
 	Region space, space2, space3, space4, space5, space6, space7;
 	Alert deleteAlert, checkAlert;
 	Window addWindow;
-//	Juice j = new Juice(null, null, 0, null);
 	ListView<String> juiceList;
 
 	// =========================
@@ -54,6 +56,8 @@ public class CustHome implements EventHandler<ActionEvent>{
 	Background background;
 	private Stage primaryStage;
 
+	Connect con;
+	private ObservableList<Juice> juiceData = FXCollections.observableArrayList();
 
 
 	void initialize() {
@@ -150,6 +154,9 @@ public class CustHome implements EventHandler<ActionEvent>{
 		addItemButton = new Button("Add Item");
 		addItemButton.setPrefHeight(3);
 		addItemButton.setPrefWidth(98);
+		
+		// connect db
+		con = new Connect();
 	}
 
 	void layout() {
@@ -238,6 +245,7 @@ public class CustHome implements EventHandler<ActionEvent>{
 		deleteItem.setOnAction(this);
 		checkout.setOnAction(this);
 		logoutBT.setOnAction(this);
+		addItemButton.setOnAction(this);
 	}
 	
 	void show() {
@@ -304,6 +312,22 @@ public class CustHome implements EventHandler<ActionEvent>{
 		}else if (event.getSource() == logoutBT) {
 			Login login = new Login(primaryStage);
 			login.show();
+		}
+		
+		if (event.getSource() == addItemButton) {
+			String selectedJuice = juiceTypeName.getValue();
+			int selectedQty = qtySpinner.getValue();
+
+			if (selectedJuice != null || selectedQty > 1) {
+				if (!juiceList.getItems().equals(selectedJuice)) {
+					// masukin data ke list view
+					juiceList.getItems().add(selectedJuice);
+				}else if (juiceList.getItems().equals(selectedJuice)) {
+
+				}
+			}else {
+				return;
+			}
 		}
 	}
 
