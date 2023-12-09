@@ -1,5 +1,8 @@
 package Main;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -30,7 +33,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import jfxtras.labs.scene.control.window.Window;
-import model.Juice;
+import model.Cart;
 
 public class CustHome implements EventHandler<ActionEvent>{
 	Scene sc;
@@ -45,10 +48,10 @@ public class CustHome implements EventHandler<ActionEvent>{
 	Region space, space2, space3, space4, space5, space6, space7;
 	Alert deleteAlert, checkAlert;
 	Window addWindow;
-	ListView<String> juiceList;
+	ListView<Cart> juiceList;
 
 	// =========================
-
+	// window
 	Label juiceLabel, juicePrice, juiceDesc, juiceQty, juiceTotal;
 	Spinner<Integer> qtySpinner;
 	ComboBox<String> juiceTypeName;
@@ -57,7 +60,7 @@ public class CustHome implements EventHandler<ActionEvent>{
 	private Stage primaryStage;
 
 	Connect con;
-	private ObservableList<Juice> juiceData = FXCollections.observableArrayList();
+	private ObservableList<Cart> juiceData = FXCollections.observableArrayList();
 
 
 	void initialize() {
@@ -106,7 +109,7 @@ public class CustHome implements EventHandler<ActionEvent>{
 		tb = new ToolBar();
 
 		// list view
-		juiceList = new ListView<String>();
+		juiceList = new ListView<Cart>();
 		juiceList.setPrefHeight(300);
 		juiceList.setPrefWidth(600);
 		juiceList.setPadding(new Insets(20, 20, 20, 20));
@@ -164,9 +167,9 @@ public class CustHome implements EventHandler<ActionEvent>{
 		vb.setAlignment(Pos.CENTER);
 		vb.setSpacing(10);
 
-		juiceList.getItems().add("1x Avocado Avalanches - [Rp. 23500]");
-		juiceList.getItems().add("3x Berry Blast - [Rp. 73500]");
-		juiceList.getItems().add("2x Citrus Crush - [Rp. 43800]");
+//		juiceList.getItems().add("1x Avocado Avalanches - [Rp. 23500]");
+//		juiceList.getItems().add("3x Berry Blast - [Rp. 73500]");
+//		juiceList.getItems().add("2x Citrus Crush - [Rp. 43800]");
 
 		if (juiceList.getItems().isEmpty()) {
 			vb.getChildren().addAll(yourCartDescLabel);
@@ -248,12 +251,26 @@ public class CustHome implements EventHandler<ActionEvent>{
 		addItemButton.setOnAction(this);
 	}
 	
-	void show() {
-		primaryStage.setScene(sc);
-		primaryStage.show();
+	public void getData() {
+		String query = "SELECT Quantity, JuiceName, juicePrice FROM MsJuice mj JOIN CartDetail cd ON mj.JuiceId = cd.JuiceId JOIN MsUser mu ON cd.Username = mu.Username";
+		ResultSet rs = con.runQuery(query);
 		
+		try {
+			while (rs.next()) {
+				Integer qty = rs.getInt("Quantity");
+				String jName = rs.getString("JuiceName");
+				Integer price = rs.getInt("Price");
+				
+				String formattedData = qty + "x" + jName + " - [Rp. " + price + "]";
+				
+				juiceData.add(new Cart(qty, jName, price, formattedData));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		juiceList.setItems(juiceData);
 	}
-	
 	
 	public CustHome(Stage primaryStage) {
 		initialize();
@@ -261,10 +278,15 @@ public class CustHome implements EventHandler<ActionEvent>{
 		initTool();
 		layout();
 		setEventHandler();
-		
+		primaryStage.setScene(sc);
 		this.primaryStage = primaryStage;
 	}
 
+	void show() {
+		primaryStage.show();
+		
+	}
+	
 	public void openSecondaryWindow() {
 		background = new Background(new BackgroundFill(Color.WHITE, null, null));
 		addWindow = new Window("Add new item");
@@ -321,7 +343,7 @@ public class CustHome implements EventHandler<ActionEvent>{
 			if (selectedJuice != null || selectedQty > 1) {
 				if (!juiceList.getItems().equals(selectedJuice)) {
 					// masukin data ke list view
-					juiceList.getItems().add(selectedJuice);
+//					juiceList.getItems().add(selectedJuice);
 				}else if (juiceList.getItems().equals(selectedJuice)) {
 
 				}

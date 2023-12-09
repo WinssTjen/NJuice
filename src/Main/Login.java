@@ -1,5 +1,8 @@
 package Main;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -50,6 +53,8 @@ public class Login implements EventHandler<ActionEvent>{
 
 	private Stage primaryStage;
 
+	Connect con;
+
 	void initialize() {
 
 		//		Login
@@ -79,10 +84,12 @@ public class Login implements EventHandler<ActionEvent>{
 		passwordField = new PasswordField();
 		passwordField.setPromptText("Enter Password...");
 		passwordField.setPrefWidth(250);
-		
+
 		errorLabel = new Label();
 
 		loginButton = new Button ("Login");
+
+		con = new Connect();
 	}
 
 	void initMenu() {
@@ -106,8 +113,8 @@ public class Login implements EventHandler<ActionEvent>{
 		vboxTitleLabel.getChildren().addAll(titleLabel, appLabel);
 		vboxUsername.getChildren().addAll(usernameLabel, usernameField);
 		vboxPassword.getChildren().addAll(passwordLabel, passwordField);
-		
-		
+
+
 		vboxLoginButton.getChildren().addAll(loginButton);
 
 		loginContainer.add(vboxTitleLabel, 0, 0);
@@ -119,7 +126,7 @@ public class Login implements EventHandler<ActionEvent>{
 
 		loginButton.setMinHeight(40);
 		loginButton.setMinWidth(70);
-		
+
 		loginBp.setCenter(loginContainer);
 	}
 
@@ -140,11 +147,11 @@ public class Login implements EventHandler<ActionEvent>{
 	}
 
 
-	
+
 	void show() {
 		primaryStage.setScene(loginScene);
 		primaryStage.show();
-		
+
 	}
 
 	public Login(Stage primaryStage){
@@ -164,20 +171,44 @@ public class Login implements EventHandler<ActionEvent>{
 		if (event.getSource() == menuItem2) {
 			Regist regist = new Regist(primaryStage);
 			regist.show();
-		} else if ((usernameField.getText().isEmpty() || passwordField.getText().isEmpty()) && event.getSource() != menuItem1) {
-			errorLabel.setText("Credentials Failed!");
 		}
-		else if (usernameField.getText().equals("cust") && passwordField.getText().equals("123")) {
-			CustHome custhome = new CustHome(primaryStage);
-			custhome.show();
-		} else if (usernameField.getText().equals("admin") && passwordField.getText().equals("123")) {
-			ViewTrans vt = new ViewTrans(primaryStage);
-			vt.show();
+
+		String enterUsername = usernameField.getText();
+		String enterPassword = passwordField.getText();
+
+		if ((usernameField.getText().isEmpty() || passwordField.getText().isEmpty()) && event.getSource() != menuItem1) {
+			errorLabel.setText("Credentials Failed!");
+		}else {
+			String query = "SELECT * FROM msuser WHERE Username = ? AND Password = ?";
+			try {
+				con.setPreparedStatement(query);
+
+				con.preparedStatement.setString(1, enterUsername);
+				con.preparedStatement.setString(2, enterPassword);
+
+				ResultSet rs = con.executeQuery();
+
+				if (rs.next()) {
+					String role = rs.getString("Role");
+					if (role.equals("Customer")) {
+						CustHome ch = new CustHome(primaryStage);
+						ch.show();
+
+					}else if (role.equals("Admin")) {
+						ViewTrans vt = new ViewTrans(primaryStage);
+						vt.show();
+					}
+				}else {
+					errorLabel.setText("Credentials Failed!");
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 
 	}
-
 
 
 }

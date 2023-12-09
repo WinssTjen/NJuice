@@ -49,6 +49,8 @@ public class Regist implements EventHandler<ActionEvent>{
 	private Stage primaryStage;
 
 	private static int i = 0;
+	
+	Connect con;
 
 	void initialize() {
 
@@ -86,7 +88,7 @@ public class Regist implements EventHandler<ActionEvent>{
 
 		regisButton = new Button ("Register");
 
-
+		con = new Connect();
 	}
 
 	void initMenu() {
@@ -115,8 +117,8 @@ public class Regist implements EventHandler<ActionEvent>{
 		vboxAgreement.getChildren().addAll(agreement);
 		errorLabel.setStyle("-fx-text-fill: red");
 		vboxRegisterButton.getChildren().addAll(regisButton);
-		
-		
+
+
 
 
 		agreement.setText("I agree to the terms and conditions of NJuice!");
@@ -180,18 +182,29 @@ public class Regist implements EventHandler<ActionEvent>{
 		} else if (!agreement.isSelected()){
 			errorLabel.setText("Please click the tnc");
 		} else {
+			String username = regisUsernameField.getText();
+			String password = regisPasswordField.getText();
+
 			i++;
 			String id = String.format("CU%03d", i);
 
-			Login login = new Login(primaryStage);
-			login.show();
+			String query = String.format("INSERT INTO msuser VALUES ('%s', '%s', '%s')", username, password, "Customer");
 
+			con.runUpdate(query);
+
+			if(regisUsernameField.equals(query)) {
+				errorLabel.setText("Username is already taken");
+			} else {
+				Login login = new Login(primaryStage);
+				login.show();
+			}
 
 		}
 
-
-
-
 	}
+
+
+
 }
+
 

@@ -58,9 +58,9 @@ public class ManageProduct implements EventHandler<ActionEvent>{
 	public Alert addAlert;
 
 	private ObservableList<Juice> juiceData = FXCollections.observableArrayList();
-	
+
 	Connect con;
-	
+
 	int r = 1;
 	private Stage primaryStage;
 
@@ -121,9 +121,9 @@ public class ManageProduct implements EventHandler<ActionEvent>{
 		space = new Region();
 		space2 = new Region();
 		space3 = new Region();
-		
+
 		con = new Connect();
-		
+
 	}
 
 	public void layout() {
@@ -236,36 +236,49 @@ public class ManageProduct implements EventHandler<ActionEvent>{
 		addAlert.setContentText("Please fill all the field");
 		addAlert.getDialogPane().getScene().getWindow();
 	}
-	
+
 	public void addData() {
 		String juiceName = inputName.getText();
-		int juicePrice = inputPrice.getValue();
 		String juiceDescription = inputDesc.getText();
-		String juiceID = String.format("ST%03d", juiceData.size()+1);
+		int juicePrice = inputPrice.getValue();
+		String maxIDQuery = "SELECT MAX(CAST(SUBSTRING(JuiceID, 3) AS SIGNED)) AS MaxId FROM msjuice";
+		ResultSet maxIDResult = con.runQuery(maxIDQuery);
+		int maxID = 0;
+		try {
+			if (maxIDResult.next()) {
+				maxID = maxIDResult.getInt("MaxID");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		String juiceID = String.format("JU%03d", maxID+1);
 		String query = String.format("INSERT INTO msjuice VALUES ('%s', '%s', %d, '%s')", juiceID, juiceName, juicePrice, juiceDescription);
 		con.runUpdate(query);
 		clearForm();
+
+		// Refresh table
+		productTable.getItems().clear();
+		getData();
 	}
-	
+
 	private void clearForm() {
 		inputName.clear();
 		inputDesc.clear();
 		inputPrice.getValueFactory().setValue(10000);
-		
+
 	}
 
 	public void getData() {
 		String query = "SELECT * FROM msjuice";
-		ResultSet rs = con.runQuery(query);
-		
 		try {
-			while (rs.next()) {
-				String jID = rs.getString("JuiceId");
-				String jName = rs.getString("JuiceName");
-				Integer jPrice = rs.getInt("Price");
-				String jDesc = rs.getString("JuiceDescription");
-				
-				juiceData.add(new Juice(jID, jName, jPrice, jDesc));
+			ResultSet res = con.runQuery(query);
+			while (res.next()) {
+				String juiceID = res.getString("JuiceID");
+				String juiceName = res.getString("JuiceName");
+				int juicePrice = res.getInt("Price");
+				String juiceDescription = res.getString("JuiceDescription");
+
+				juiceData.add(new Juice(juiceID, juiceName, juicePrice, juiceDescription));    
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -273,7 +286,62 @@ public class ManageProduct implements EventHandler<ActionEvent>{
 		}
 		productTable.setItems(juiceData);
 	}
-	
+
+	public void comboBox() {
+		String query = "SELECT JuiceId FROM msjuice";
+		try {
+			ResultSet res = con.runQuery(query);
+			comboID.getItems().clear();
+			while (res.next()) {
+				String juiceID = res.getString("JuiceID");
+				comboID.getItems().add(juiceID);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void updateData() {
+		String selectedID = comboID.getValue();
+		if (selectedID != null) {
+			int newJuicePrice = inputPrice.getValue();
+			if (newJuicePrice >= 10000) {
+				String update = String.format("UPDATE msjuice SET Price = %d WHERE JuiceID = '%s'", newJuicePrice, selectedID);
+				con.runUpdate(update);
+
+				// Refresh table and ComboBox
+				productTable.getItems().clear();
+				getData();
+				comboBox();
+				clearForm();
+			}
+		} else {
+			addAlert.show();
+			return;
+		}
+	}
+
+	public void deleteData() {
+
+		String selectedJuiceID = comboID.getValue();
+		if (selectedJuiceID != null) {
+			String deleteQuery = String.format("DELETE FROM msjuice WHERE JuiceID = '%s'", selectedJuiceID);
+			con.runUpdate(deleteQuery);
+
+			// Refresh table and ComboBox
+			productTable.getItems().clear();
+			getData();
+			comboBox();
+
+			clearForm();
+		} else {
+			addAlert.show();
+			return;
+		}
+	}
+
+
 	public ManageProduct(Stage primaryStage) {
 		initialize();
 		initMenu();
@@ -281,8 +349,9 @@ public class ManageProduct implements EventHandler<ActionEvent>{
 		initAlert();
 		setEventHandler();
 		layout();
+		comboBox();
 		getData();
-		addData();
+		clearForm();
 		primaryStage.setScene(sc);
 		this.primaryStage = primaryStage;
 	}
@@ -290,7 +359,7 @@ public class ManageProduct implements EventHandler<ActionEvent>{
 	void show(){
 		primaryStage.show();
 	}
-	
+
 	@Override
 	public void handle(ActionEvent e) {
 		if(e.getSource() == manageProd) {
@@ -303,83 +372,27 @@ public class ManageProduct implements EventHandler<ActionEvent>{
 			Login l = new Login(primaryStage);
 			l.show();
 		}
-		
+
 		if (e.getSource() == addButton) {
 			String juiceID = String.format("JU%03d", r++);
 			String juiceName = inputName.getText();
 			int juicePrice = inputPrice.getValue();
 			String juiceDesc = inputDesc.getText();
 
-			// validasi name and description
-			if (juiceName.isBlank() || juiceDesc.isBlank()) {
+			// validasi 
+			if (!juiceName.isBlank() && !juiceDesc.isBlank() && juiceDesc.length() >= 10 && juiceDesc.length() <= 100) {
+				addData();
+				comboBox();
+			}else {
 				addAlert.show();
 				return;
 			}
-
-			// validasi price
-			if (juicePrice < 10000) {
-				addAlert.show();
-				return;
-			}
-
-			// validasi description
-			if (juiceDesc.length() < 10 || juiceDesc.length() > 100) {
-				addAlert.show();
-				return;
-			}else if (juiceDesc.isBlank()) {
-				addAlert.show();
-				return;
-			}
-
-			Juice ju = new Juice(juiceID, juiceName, juicePrice, juiceDesc);
-			productTable.getItems().add(ju);
-			inputName.clear();
-			inputDesc.clear();
-
-			comboID.getItems().add(juiceID);
 
 		}else if (e.getSource() == updateButton) {
-			String juiceID = comboID.getValue();
-			int updJuicePrice = inputPrice.getValue();
-			Juice selectedJuice = null;
-			
-			if (!(juiceID != null) || updJuicePrice < 10000) {
-				addAlert.show();
-				return;
-			}
+			updateData();
 
-			for (Juice ju : juiceData) {
-				if (ju.getJuiceID().equals(juiceID)) {
-					selectedJuice = ju;
-					break;
-				}
-			}
-			
-			if (selectedJuice != null) {
-				selectedJuice.setJuicePrice(updJuicePrice);
-			}
-
-			productTable.refresh();
 		}else if (e.getSource() == deleteButton) {
-			String deleteJuice = comboID.getValue();
-			Juice selectedID = null;
-
-			for (Juice ju : juiceData) {
-				if (ju.getJuiceID().equals(deleteJuice)) {
-					selectedID = ju;
-					break;
-				}
-			}
-
-			if (selectedID != null) {
-				productTable.getItems().remove(selectedID);
-				juiceData.remove(selectedID);
-			}
-
-			comboID.getItems().remove(deleteJuice);
-			comboID.setValue(null);
-
-			productTable.refresh();
+			deleteData();
 		}
 
 	}
