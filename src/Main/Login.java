@@ -54,6 +54,8 @@ public class Login implements EventHandler<ActionEvent>{
 	private Stage primaryStage;
 
 	Connect con;
+	
+	String usernameHome;
 
 	void initialize() {
 
@@ -146,15 +148,13 @@ public class Login implements EventHandler<ActionEvent>{
 		loginButton.setOnAction(this);
 	}
 
-
-
 	void show() {
 		primaryStage.setScene(loginScene);
 		primaryStage.show();
 
 	}
 
-	public Login(Stage primaryStage){
+	public Login(Stage primaryStage, String usernameHome){
 		initialize();
 		initMenu();
 		login();
@@ -162,13 +162,14 @@ public class Login implements EventHandler<ActionEvent>{
 		setEvent();
 
 		this.primaryStage = primaryStage;
-
-
+		this.usernameHome = usernameHome;
 	}
 
 	@Override
 	public void handle(ActionEvent event) {
-		if (event.getSource() == menuItem2) {
+		if (event.getSource() == menuItem1) {
+			return;
+		} else if (event.getSource() == menuItem2) {
 			Regist regist = new Regist(primaryStage);
 			regist.show();
 		}
@@ -176,22 +177,25 @@ public class Login implements EventHandler<ActionEvent>{
 		String enterUsername = usernameField.getText();
 		String enterPassword = passwordField.getText();
 
-		if ((usernameField.getText().isEmpty() || passwordField.getText().isEmpty()) && event.getSource() != menuItem1) {
+		if ((usernameField.getText().isEmpty() || passwordField.getText().isEmpty())) {
 			errorLabel.setText("Credentials Failed!");
 		}else {
 			String query = "SELECT * FROM msuser WHERE Username = ? AND Password = ?";
+			
 			try {
 				con.setPreparedStatement(query);
 
 				con.preparedStatement.setString(1, enterUsername);
 				con.preparedStatement.setString(2, enterPassword);
 
+				
 				ResultSet rs = con.executeQuery();
 
 				if (rs.next()) {
 					String role = rs.getString("Role");
 					if (role.equals("Customer")) {
-						CustHome ch = new CustHome(primaryStage);
+						usernameHome = enterUsername;
+						CustHome ch = new CustHome(primaryStage, usernameHome);
 						ch.show();
 
 					}else if (role.equals("Admin")) {
@@ -209,6 +213,5 @@ public class Login implements EventHandler<ActionEvent>{
 
 
 	}
-
 
 }

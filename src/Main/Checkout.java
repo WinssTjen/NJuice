@@ -184,11 +184,11 @@ public class Checkout implements EventHandler<ActionEvent> {
 			
 		} else if (event.getSource() == cancel) {
 //			fail.show();
-			CustHome ch = new CustHome(primaryStage);
-			ch.show();
+//			CustHome ch = new CustHome(primaryStage);
+//			ch.show();
 			
 		}else if (event.getSource() == logOut) {
-			Login login = new Login(primaryStage);
+			Login login = new Login(primaryStage, "");
 			login.show();
 		}
 		

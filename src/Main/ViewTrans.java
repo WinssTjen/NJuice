@@ -211,7 +211,7 @@ public class ViewTrans implements EventHandler<ActionEvent>{
 			mp.show();
 		}
 		if (e.getSource() == mi3) {
-			Login l = new Login(primaryStage);
+			Login l = new Login(primaryStage, "");
 			l.show();
 		}
 

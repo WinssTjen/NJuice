@@ -369,7 +369,7 @@ public class ManageProduct implements EventHandler<ActionEvent>{
 			ViewTrans vt = new ViewTrans(primaryStage);
 			vt.show();
 		} else if (e.getSource() == logoutAdmin){
-			Login l = new Login(primaryStage);
+			Login l = new Login(primaryStage, "");
 			l.show();
 		}
 

@@ -61,6 +61,8 @@ public class CustHome implements EventHandler<ActionEvent>{
 
 	Connect con;
 	private ObservableList<Cart> juiceData = FXCollections.observableArrayList();
+	String usernameHome;
+
 
 
 	void initialize() {
@@ -97,7 +99,7 @@ public class CustHome implements EventHandler<ActionEvent>{
 		checkout.setPrefWidth(80);
 
 		// label
-		greetLabel = new Label("Hi, " + "Winsen"/* username */);
+		greetLabel = new Label();
 		greetLabel.setFont(Font.font(null, FontWeight.BOLD, 10));
 		yourCartLabel = new Label("Your Cart");
 		yourCartLabel.setFont(Font.font(null, FontWeight.BOLD, 50));
@@ -157,7 +159,7 @@ public class CustHome implements EventHandler<ActionEvent>{
 		addItemButton = new Button("Add Item");
 		addItemButton.setPrefHeight(3);
 		addItemButton.setPrefWidth(98);
-		
+
 		// connect db
 		con = new Connect();
 	}
@@ -167,9 +169,9 @@ public class CustHome implements EventHandler<ActionEvent>{
 		vb.setAlignment(Pos.CENTER);
 		vb.setSpacing(10);
 
-//		juiceList.getItems().add("1x Avocado Avalanches - [Rp. 23500]");
-//		juiceList.getItems().add("3x Berry Blast - [Rp. 73500]");
-//		juiceList.getItems().add("2x Citrus Crush - [Rp. 43800]");
+		//		juiceList.getItems().add("1x Avocado Avalanches - [Rp. 23500]");
+		//		juiceList.getItems().add("3x Berry Blast - [Rp. 73500]");
+		//		juiceList.getItems().add("2x Citrus Crush - [Rp. 43800]");
 
 		if (juiceList.getItems().isEmpty()) {
 			vb.getChildren().addAll(yourCartDescLabel);
@@ -250,19 +252,34 @@ public class CustHome implements EventHandler<ActionEvent>{
 		logoutBT.setOnAction(this);
 		addItemButton.setOnAction(this);
 	}
-	
+
+	//	public void getUsername(String usernameHome) {
+	//		String query = "SELECT Username FROM msuser";
+	//		ResultSet rs = con.runQuery(query);
+	//		
+	//		try {
+	//			if (rs.next()) {
+	//				usernameHome = rs.getString("Username");
+	//				greetLabel.setText("Hi, " + usernameHome);
+	//			}
+	//		} catch (SQLException e) {
+	//			e.printStackTrace();
+	//		}
+	//		getUsername(usernameHome);
+	//	}
+
 	public void getData() {
-		String query = "SELECT Quantity, JuiceName, juicePrice FROM MsJuice mj JOIN CartDetail cd ON mj.JuiceId = cd.JuiceId JOIN MsUser mu ON cd.Username = mu.Username";
+		String query = "SELECT Quantity, JuiceName, Price FROM MsJuice mj JOIN CartDetail cd ON mj.JuiceId = cd.JuiceId JOIN MsUser mu ON cd.Username = mu.Username";
 		ResultSet rs = con.runQuery(query);
-		
+
 		try {
 			while (rs.next()) {
 				Integer qty = rs.getInt("Quantity");
 				String jName = rs.getString("JuiceName");
 				Integer price = rs.getInt("Price");
-				
+
 				String formattedData = qty + "x" + jName + " - [Rp. " + price + "]";
-				
+
 				juiceData.add(new Cart(qty, jName, price, formattedData));
 			}
 		} catch (SQLException e) {
@@ -271,22 +288,41 @@ public class CustHome implements EventHandler<ActionEvent>{
 		}
 		juiceList.setItems(juiceData);
 	}
+
+	public void getJuice() {
+		String query = "SELECT JuiceName FROM msjuice";
+		ResultSet rs = con.runQuery(query);
+		juiceTypeName.getItems().clear();
+		try {
+			while (rs.next()) {
+				String juiceName = rs.getString("JuiceName");
+				juiceTypeName.getItems().add(juiceName);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
-	public CustHome(Stage primaryStage) {
+
+
+	public CustHome(Stage primaryStage, String usernameHome) {
 		initialize();
 		initAlert();
 		initTool();
 		layout();
 		setEventHandler();
+		getData();
 		primaryStage.setScene(sc);
 		this.primaryStage = primaryStage;
+		this.usernameHome = usernameHome;
 	}
 
 	void show() {
 		primaryStage.show();
-		
+
 	}
-	
+
 	public void openSecondaryWindow() {
 		background = new Background(new BackgroundFill(Color.WHITE, null, null));
 		addWindow = new Window("Add new item");
@@ -312,6 +348,7 @@ public class CustHome implements EventHandler<ActionEvent>{
 
 	}
 
+
 	@Override
 	public void handle(ActionEvent event) {
 		if (event.getSource() == addItem) {
@@ -332,10 +369,10 @@ public class CustHome implements EventHandler<ActionEvent>{
 				ck.show();
 			}
 		}else if (event.getSource() == logoutBT) {
-			Login login = new Login(primaryStage);
+			Login login = new Login(primaryStage, usernameHome);
 			login.show();
 		}
-		
+
 		if (event.getSource() == addItemButton) {
 			String selectedJuice = juiceTypeName.getValue();
 			int selectedQty = qtySpinner.getValue();
@@ -343,7 +380,7 @@ public class CustHome implements EventHandler<ActionEvent>{
 			if (selectedJuice != null || selectedQty > 1) {
 				if (!juiceList.getItems().equals(selectedJuice)) {
 					// masukin data ke list view
-//					juiceList.getItems().add(selectedJuice);
+					//					juiceList.getItems().add(selectedJuice);
 				}else if (juiceList.getItems().equals(selectedJuice)) {
 
 				}

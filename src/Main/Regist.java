@@ -1,6 +1,9 @@
 package Main;
 
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -49,7 +52,7 @@ public class Regist implements EventHandler<ActionEvent>{
 	private Stage primaryStage;
 
 	private static int i = 0;
-	
+
 	Connect con;
 
 	void initialize() {
@@ -175,7 +178,7 @@ public class Regist implements EventHandler<ActionEvent>{
 			return;
 		}
 		else if(event.getSource() == menuItem1) {
-			Login login = new Login(primaryStage);
+			Login login = new Login(primaryStage, "");
 			login.show();
 		} else if (regisUsernameField.getText().isEmpty() || regisPasswordField.getText().isEmpty()) {
 			errorLabel.setText("Please input all the field");
@@ -185,25 +188,40 @@ public class Regist implements EventHandler<ActionEvent>{
 			String username = regisUsernameField.getText();
 			String password = regisPasswordField.getText();
 
-			i++;
-			String id = String.format("CU%03d", i);
+			String queryCheck = String.format("SELECT * FROM msuser WHERE Username = '%s'", username);
+			ResultSet resultSet = con.runQuery(queryCheck);
 
-			String query = String.format("INSERT INTO msuser VALUES ('%s', '%s', '%s')", username, password, "Customer");
 
-			con.runUpdate(query);
+			try {
+				if(resultSet.next()) {
+					errorLabel.setText("Username is already taken");
 
-			if(regisUsernameField.equals(query)) {
-				errorLabel.setText("Username is already taken");
-			} else {
-				Login login = new Login(primaryStage);
-				login.show();
+					regisUsernameField.clear();
+					regisPasswordField.clear();
+					agreement.setSelected(false);
+				} else {
+
+					i++;
+					String id = String.format("CU%03d", i);
+
+					String queryInsert = String.format("INSERT INTO msuser VALUES ('%s', '%s', '%s')", username, password, "Customer");
+					con.runUpdate(queryInsert);
+
+					// Registration successful, navigate to login screen
+					Login login = new Login(primaryStage, "");
+					login.show();
+				}
+
+
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
+
 
 		}
 
 	}
-
-
 
 }
 
