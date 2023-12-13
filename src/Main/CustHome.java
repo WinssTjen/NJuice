@@ -259,7 +259,7 @@ public class CustHome implements EventHandler<ActionEvent>{
 					String juiceName = rs.getString("JuiceName");
 					Integer price = rs.getInt("Price");
 					
-					String CustCart = String.format("%dx - %s - [Rp. %d]", qty, juiceName, price);
+					String CustCart = String.format("%dx - %s - [Rp.%d]", qty, juiceName, price);
 					
 					juiceData.add(CustCart);
 				}
@@ -267,18 +267,18 @@ public class CustHome implements EventHandler<ActionEvent>{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			cartDetail.getItems().setAll(juiceData);
-		}else {
-			yourCartDescLabel.setText("Your cart is empty, try adding items!");
 		}
+		greetLabel.setText("Hi, " + usernameHome);
 	}
 	
 	public void refresh() {
 		cartDetail.getItems().clear();
 		if (juiceData.isEmpty()) {
 //			vb.getChildren().addAll(yourCartDescLabel);
+			yourCartDescLabel.setText("Your cart is empty, try adding items!");
 		}else {
 //			vb.getChildren().addAll(yourCartLabel, cartDetail);
+			cartDetail.getItems().setAll(juiceData);
 		}
 	}
 
@@ -330,10 +330,10 @@ public class CustHome implements EventHandler<ActionEvent>{
 		initialize();
 		initAlert();
 		initTool();
-		layout();
-		setEventHandler();
 		getData(usernameHome);
 		refresh();
+		layout();
+		setEventHandler();
 		primaryStage.setScene(sc);
 		this.primaryStage = primaryStage;
 		this.usernameHome = usernameHome;
