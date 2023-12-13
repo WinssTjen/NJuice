@@ -128,10 +128,10 @@ public class CustHome implements EventHandler<ActionEvent>{
 		// label window
 		juiceLabel = new Label("Juice: ");
 		juiceLabel.setFont(Font.font(null, FontWeight.NORMAL, 15));
-		juicePrice = new Label("Juice Price: ");
+		juicePrice = new Label();
 		juicePrice.setFont(Font.font(null, FontWeight.NORMAL, 15));
 		juicePrice.setPadding(new Insets(10, 10, 10, 10));
-		juiceDesc = new Label("Description: ");
+		juiceDesc = new Label();
 		juiceDesc.setFont(Font.font(null, FontWeight.SEMI_BOLD, 15));
 		juiceQty = new Label("Quantity: ");
 		juiceQty.setFont(Font.font(null, FontWeight.NORMAL, 15));
@@ -147,13 +147,6 @@ public class CustHome implements EventHandler<ActionEvent>{
 		juiceTypeName = new ComboBox<String>();
 		juiceTypeName.setPrefHeight(25);
 		juiceTypeName.setPrefWidth(240);
-		juiceTypeName.getItems().add("Avocado Avalanches");
-		juiceTypeName.getItems().add("Apple Adventure");
-		juiceTypeName.getItems().add("Berry Blast");
-		juiceTypeName.getItems().add("Mango Tango");
-		juiceTypeName.getItems().add("Citrus Crush");
-		juiceTypeName.getItems().add("Watermelon Wave");
-		juiceTypeName.getItems().add("Pear Pepper");
 
 		// button window
 		addItemButton = new Button("Add Item");
@@ -168,10 +161,6 @@ public class CustHome implements EventHandler<ActionEvent>{
 		vb.getChildren().addAll(yourCartLabel);
 		vb.setAlignment(Pos.CENTER);
 		vb.setSpacing(10);
-
-		//		juiceList.getItems().add("1x Avocado Avalanches - [Rp. 23500]");
-		//		juiceList.getItems().add("3x Berry Blast - [Rp. 73500]");
-		//		juiceList.getItems().add("2x Citrus Crush - [Rp. 43800]");
 
 		if (juiceList.getItems().isEmpty()) {
 			vb.getChildren().addAll(yourCartDescLabel);
@@ -203,7 +192,7 @@ public class CustHome implements EventHandler<ActionEvent>{
 		vb2.setSpacing(8);
 
 		// combo box + harga juice
-		hb3.getChildren().addAll(space6, juiceTypeName, juicePrice, space7);
+		hb3.getChildren().addAll(space6, juiceTypeName, space7, juicePrice);
 		hb3.setAlignment(Pos.CENTER);
 		vb2.getChildren().add(hb3);
 		vb2.setSpacing(8);
@@ -293,17 +282,44 @@ public class CustHome implements EventHandler<ActionEvent>{
 		String query = "SELECT JuiceName FROM msjuice";
 		ResultSet rs = con.runQuery(query);
 		juiceTypeName.getItems().clear();
+
 		try {
 			while (rs.next()) {
-				String juiceName = rs.getString("JuiceName");
-				juiceTypeName.getItems().add(juiceName);
+				String name = rs.getString("JuiceName");
+				
+				String query2 = "SELECT Price, JuiceDescription FROM msjuice WHERE JuiceName = ?";
+				
+				juiceTypeName.getItems().add(name);
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
 	}
-	
+
+	public void getPrice() {
+		String selectedJuice = juiceTypeName.getValue();
+		String query = "SELECT Price, JuiceDescription FROM msjuice WHERE JuiceName = ?";
+		try {
+			con.setPreparedStatement(query);
+			con.preparedStatement.setString(1, selectedJuice);
+			System.out.println("said");
+			ResultSet rs = con.executeQuery();
+			
+			if (rs.next()) {
+				int Jprice = rs.getInt("Price");
+				String Jdesc = rs.getString("JuiceDescription");
+				System.out.println("");
+				juicePrice.setText("Juice Price: " + Jprice);
+				juiceDesc.setText(Jdesc);
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 
 	public CustHome(Stage primaryStage, String usernameHome) {
@@ -313,6 +329,8 @@ public class CustHome implements EventHandler<ActionEvent>{
 		layout();
 		setEventHandler();
 		getData();
+		getJuice();
+		getPrice();
 		primaryStage.setScene(sc);
 		this.primaryStage = primaryStage;
 		this.usernameHome = usernameHome;
@@ -345,13 +363,13 @@ public class CustHome implements EventHandler<ActionEvent>{
 		Stage secondStage = new Stage();
 		secondStage.setScene(new Scene(bp2, 600, 700));
 		secondStage.showAndWait();
-
 	}
 
 
 	@Override
 	public void handle(ActionEvent event) {
 		if (event.getSource() == addItem) {
+			getJuice();
 			openSecondaryWindow();
 		}else if (event.getSource() == deleteItem) {
 			if (juiceList.getSelectionModel().getSelectedItem() != null) {
@@ -376,17 +394,24 @@ public class CustHome implements EventHandler<ActionEvent>{
 		if (event.getSource() == addItemButton) {
 			String selectedJuice = juiceTypeName.getValue();
 			int selectedQty = qtySpinner.getValue();
-
-			if (selectedJuice != null || selectedQty > 1) {
-				if (!juiceList.getItems().equals(selectedJuice)) {
-					// masukin data ke list view
-					//					juiceList.getItems().add(selectedJuice);
-				}else if (juiceList.getItems().equals(selectedJuice)) {
-
-				}
+			
+			if (selectedJuice != null) {
+				getPrice();
 			}else {
-				return;
+				juicePrice.setText("Juice Price: -");
+				juiceDesc.setText("Description: -");
 			}
+			
+//			if (selectedJuice != null || selectedQty > 1) {
+//				if (!juiceList.getItems().equals(selectedJuice)) {
+//					// masukin data ke list view
+//					//					juiceList.getItems().add(selectedJuice);
+//				}else if (juiceList.getItems().equals(selectedJuice)) {
+//
+//				}
+//			}else {
+//				return;
+//			}
 		}
 	}
 
