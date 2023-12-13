@@ -188,7 +188,7 @@ public class Checkout implements EventHandler<ActionEvent> {
 //			ch.show();
 			
 		}else if (event.getSource() == logOut) {
-			Login login = new Login(primaryStage, "");
+			Login login = new Login(primaryStage);
 			login.show();
 		}
 		

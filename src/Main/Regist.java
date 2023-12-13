@@ -178,7 +178,7 @@ public class Regist implements EventHandler<ActionEvent>{
 			return;
 		}
 		else if(event.getSource() == menuItem1) {
-			Login login = new Login(primaryStage, "");
+			Login login = new Login(primaryStage);
 			login.show();
 		} else if (regisUsernameField.getText().isEmpty() || regisPasswordField.getText().isEmpty()) {
 			errorLabel.setText("Please input all the field");
@@ -208,7 +208,7 @@ public class Regist implements EventHandler<ActionEvent>{
 					con.runUpdate(queryInsert);
 
 					// Registration successful, navigate to login screen
-					Login login = new Login(primaryStage, "");
+					Login login = new Login(primaryStage);
 					login.show();
 				}
 

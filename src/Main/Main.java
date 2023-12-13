@@ -12,7 +12,7 @@ public class Main extends Application{
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		Login login = new Login(primaryStage, "");
+		Login login = new Login(primaryStage);
 		login.show();
 		
 	}

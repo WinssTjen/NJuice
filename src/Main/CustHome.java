@@ -2,6 +2,7 @@ package Main;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -48,7 +49,8 @@ public class CustHome implements EventHandler<ActionEvent>{
 	Region space, space2, space3, space4, space5, space6, space7;
 	Alert deleteAlert, checkAlert;
 	Window addWindow;
-	ListView<Cart> juiceList;
+//	List<Cart> cartList;
+	ListView<String> cartDetail;
 
 	// =========================
 	// window
@@ -60,7 +62,8 @@ public class CustHome implements EventHandler<ActionEvent>{
 	private Stage primaryStage;
 
 	Connect con;
-	private ObservableList<Cart> juiceData = FXCollections.observableArrayList();
+	private ObservableList<String> juiceData = FXCollections.observableArrayList();
+	
 	String usernameHome;
 
 
@@ -103,7 +106,7 @@ public class CustHome implements EventHandler<ActionEvent>{
 		greetLabel.setFont(Font.font(null, FontWeight.BOLD, 10));
 		yourCartLabel = new Label("Your Cart");
 		yourCartLabel.setFont(Font.font(null, FontWeight.BOLD, 50));
-		yourCartDescLabel = new Label("Your cart is empty, try adding items!");
+		yourCartDescLabel = new Label();
 		price = new Label("Total Price: 190000");
 		price.setFont(Font.font(null, FontWeight.SEMI_BOLD, 18));
 
@@ -111,10 +114,10 @@ public class CustHome implements EventHandler<ActionEvent>{
 		tb = new ToolBar();
 
 		// list view
-		juiceList = new ListView<Cart>();
-		juiceList.setPrefHeight(300);
-		juiceList.setPrefWidth(600);
-		juiceList.setPadding(new Insets(20, 20, 20, 20));
+		cartDetail = new ListView<String>();
+		cartDetail.setPrefHeight(300);
+		cartDetail.setPrefWidth(600);
+		cartDetail.setPadding(new Insets(20, 20, 20, 20));
 
 		// window
 		addWindow = new Window("Add new item");
@@ -162,12 +165,12 @@ public class CustHome implements EventHandler<ActionEvent>{
 		vb.setAlignment(Pos.CENTER);
 		vb.setSpacing(10);
 
-		if (juiceList.getItems().isEmpty()) {
+		if (cartDetail.getItems().isEmpty()) {
 			vb.getChildren().addAll(yourCartDescLabel);
 			vb.setAlignment(Pos.CENTER);
 			vb.setSpacing(14);
 		}else {
-			hb2.getChildren().addAll(space4, juiceList, space5);
+			hb2.getChildren().addAll(space4, cartDetail, space5);
 			hb2.setAlignment(Pos.CENTER);
 
 			vb.getChildren().add(hb2);
@@ -242,40 +245,41 @@ public class CustHome implements EventHandler<ActionEvent>{
 		addItemButton.setOnAction(this);
 	}
 
-	//	public void getUsername(String usernameHome) {
-	//		String query = "SELECT Username FROM msuser";
-	//		ResultSet rs = con.runQuery(query);
-	//		
-	//		try {
-	//			if (rs.next()) {
-	//				usernameHome = rs.getString("Username");
-	//				greetLabel.setText("Hi, " + usernameHome);
-	//			}
-	//		} catch (SQLException e) {
-	//			e.printStackTrace();
-	//		}
-	//		getUsername(usernameHome);
-	//	}
-
-	public void getData() {
-		String query = "SELECT Quantity, JuiceName, Price FROM MsJuice mj JOIN CartDetail cd ON mj.JuiceId = cd.JuiceId JOIN MsUser mu ON cd.Username = mu.Username";
-		ResultSet rs = con.runQuery(query);
-
-		try {
-			while (rs.next()) {
-				Integer qty = rs.getInt("Quantity");
-				String jName = rs.getString("JuiceName");
-				Integer price = rs.getInt("Price");
-
-				String formattedData = qty + "x" + jName + " - [Rp. " + price + "]";
-
-				juiceData.add(new Cart(qty, jName, price, formattedData));
+	public void getData(String usernameHome) {
+		cartDetail.getItems().clear();
+		if (cartDetail != null) {
+			String query = "SELECT Quantity, JuiceName, Price FROM MsJuice mj JOIN CartDetail cd ON mj.JuiceId = cd.JuiceId JOIN MsUser mu ON cd.Username = mu.Username WHERE cd.Username = ?";
+			try {
+				con.setPreparedStatement(query);
+				con.preparedStatement.setString(1, usernameHome);
+				ResultSet rs = con.executeQuery();
+				
+				while (rs.next()) {
+					Integer qty = rs.getInt("Quantity");
+					String juiceName = rs.getString("JuiceName");
+					Integer price = rs.getInt("Price");
+					
+					String CustCart = String.format("%dx - %s - [Rp. %d]", qty, juiceName, price);
+					
+					juiceData.add(CustCart);
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			cartDetail.getItems().setAll(juiceData);
+		}else {
+			yourCartDescLabel.setText("Your cart is empty, try adding items!");
 		}
-		juiceList.setItems(juiceData);
+	}
+	
+	public void refresh() {
+		cartDetail.getItems().clear();
+		if (juiceData.isEmpty()) {
+//			vb.getChildren().addAll(yourCartDescLabel);
+		}else {
+//			vb.getChildren().addAll(yourCartLabel, cartDetail);
+		}
 	}
 
 	public void getJuice() {
@@ -286,9 +290,9 @@ public class CustHome implements EventHandler<ActionEvent>{
 		try {
 			while (rs.next()) {
 				String name = rs.getString("JuiceName");
-				
+
 				String query2 = "SELECT Price, JuiceDescription FROM msjuice WHERE JuiceName = ?";
-				
+
 				juiceTypeName.getItems().add(name);
 			}
 		} catch (SQLException e) {
@@ -298,28 +302,28 @@ public class CustHome implements EventHandler<ActionEvent>{
 
 	}
 
-	public void getPrice() {
-		String selectedJuice = juiceTypeName.getValue();
-		String query = "SELECT Price, JuiceDescription FROM msjuice WHERE JuiceName = ?";
-		try {
-			con.setPreparedStatement(query);
-			con.preparedStatement.setString(1, selectedJuice);
-			System.out.println("said");
-			ResultSet rs = con.executeQuery();
-			
-			if (rs.next()) {
-				int Jprice = rs.getInt("Price");
-				String Jdesc = rs.getString("JuiceDescription");
-				System.out.println("");
-				juicePrice.setText("Juice Price: " + Jprice);
-				juiceDesc.setText(Jdesc);
-			}
-			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+//	public void getPrice() {
+//		String selectedJuice = juiceTypeName.getValue();
+//		String query = "SELECT Price, JuiceDescription FROM msjuice WHERE JuiceName = ?";
+//		try {
+//			con.setPreparedStatement(query);
+//			con.preparedStatement.setString(1, selectedJuice);
+//			System.out.println("said");
+//			ResultSet rs = con.executeQuery();
+//
+//			if (rs.next()) {
+//				int Jprice = rs.getInt("Price");
+//				String Jdesc = rs.getString("JuiceDescription");
+//				System.out.println("");
+//				juicePrice.setText("Juice Price: " + Jprice);
+//				juiceDesc.setText(Jdesc);
+//			}
+//
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
 
 
 	public CustHome(Stage primaryStage, String usernameHome) {
@@ -328,9 +332,8 @@ public class CustHome implements EventHandler<ActionEvent>{
 		initTool();
 		layout();
 		setEventHandler();
-		getData();
-		getJuice();
-		getPrice();
+		getData(usernameHome);
+		refresh();
 		primaryStage.setScene(sc);
 		this.primaryStage = primaryStage;
 		this.usernameHome = usernameHome;
@@ -372,14 +375,14 @@ public class CustHome implements EventHandler<ActionEvent>{
 			getJuice();
 			openSecondaryWindow();
 		}else if (event.getSource() == deleteItem) {
-			if (juiceList.getSelectionModel().getSelectedItem() != null) {
-				juiceList.getItems().remove(juiceList.getSelectionModel().getSelectedItem());
+			if (cartDetail.getSelectionModel().getSelectedItem() != null) {
+				cartDetail.getItems().remove(cartDetail.getSelectionModel().getSelectedItem());
 			}else {
 				deleteAlert.show();
 				return;
 			}
 		}else if (event.getSource() == checkout) {
-			if (juiceList.getItems().isEmpty()) {
+			if (cartDetail.getItems().isEmpty()) {
 				checkAlert.show();
 				return;
 			}else {
@@ -387,31 +390,31 @@ public class CustHome implements EventHandler<ActionEvent>{
 				ck.show();
 			}
 		}else if (event.getSource() == logoutBT) {
-			Login login = new Login(primaryStage, usernameHome);
+			Login login = new Login(primaryStage);
 			login.show();
 		}
 
 		if (event.getSource() == addItemButton) {
 			String selectedJuice = juiceTypeName.getValue();
 			int selectedQty = qtySpinner.getValue();
-			
+
 			if (selectedJuice != null) {
-				getPrice();
+//				getPrice();
 			}else {
 				juicePrice.setText("Juice Price: -");
 				juiceDesc.setText("Description: -");
 			}
-			
-//			if (selectedJuice != null || selectedQty > 1) {
-//				if (!juiceList.getItems().equals(selectedJuice)) {
-//					// masukin data ke list view
-//					//					juiceList.getItems().add(selectedJuice);
-//				}else if (juiceList.getItems().equals(selectedJuice)) {
-//
-//				}
-//			}else {
-//				return;
-//			}
+
+			//			if (selectedJuice != null || selectedQty > 1) {
+			//				if (!juiceList.getItems().equals(selectedJuice)) {
+			//					// masukin data ke list view
+			//					//					juiceList.getItems().add(selectedJuice);
+			//				}else if (juiceList.getItems().equals(selectedJuice)) {
+			//
+			//				}
+			//			}else {
+			//				return;
+			//			}
 		}
 	}
 

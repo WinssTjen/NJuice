@@ -154,7 +154,7 @@ public class Login implements EventHandler<ActionEvent>{
 
 	}
 
-	public Login(Stage primaryStage, String usernameHome){
+	public Login(Stage primaryStage){
 		initialize();
 		initMenu();
 		login();
@@ -162,7 +162,6 @@ public class Login implements EventHandler<ActionEvent>{
 		setEvent();
 
 		this.primaryStage = primaryStage;
-		this.usernameHome = usernameHome;
 	}
 
 	@Override
@@ -174,7 +173,7 @@ public class Login implements EventHandler<ActionEvent>{
 			regist.show();
 		}
 
-		String enterUsername = usernameField.getText();
+		String usernameHome = usernameField.getText();
 		String enterPassword = passwordField.getText();
 
 		if ((usernameField.getText().isEmpty() || passwordField.getText().isEmpty())) {
@@ -185,7 +184,7 @@ public class Login implements EventHandler<ActionEvent>{
 			try {
 				con.setPreparedStatement(query);
 
-				con.preparedStatement.setString(1, enterUsername);
+				con.preparedStatement.setString(1, usernameHome);
 				con.preparedStatement.setString(2, enterPassword);
 
 				
@@ -194,7 +193,7 @@ public class Login implements EventHandler<ActionEvent>{
 				if (rs.next()) {
 					String role = rs.getString("Role");
 					if (role.equals("Customer")) {
-						usernameHome = enterUsername;
+//						usernameHome = enterUsername;
 						CustHome ch = new CustHome(primaryStage, usernameHome);
 						ch.show();
 
