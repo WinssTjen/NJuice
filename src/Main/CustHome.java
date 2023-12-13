@@ -282,7 +282,7 @@ public class CustHome implements EventHandler<ActionEvent>{
 		}
 	}
 
-	public void getJuice() {
+	public void comboJuice() {
 		String query = "SELECT JuiceName FROM msjuice";
 		ResultSet rs = con.runQuery(query);
 		juiceTypeName.getItems().clear();
@@ -372,15 +372,32 @@ public class CustHome implements EventHandler<ActionEvent>{
 	@Override
 	public void handle(ActionEvent event) {
 		if (event.getSource() == addItem) {
-			getJuice();
+			comboJuice();
 			openSecondaryWindow();
 		}else if (event.getSource() == deleteItem) {
+			String selectedCart = cartDetail.getSelectionModel().getSelectedItem();
+			
+			
+			
 			if (cartDetail.getSelectionModel().getSelectedItem() != null) {
-				cartDetail.getItems().remove(cartDetail.getSelectionModel().getSelectedItem());
+				String query = "DELETE * FROM cartdetail WHERE Username ? AND JuiceID IN (SELECT JuiceName FROM msjuice WHERE JuiceName ?)";
+				ResultSet rs = con.executeQuery();
+				
+				try {
+					con.preparedStatement.setString(1, usernameHome);
+//					con.preparedStatement.setString(2, );
+					
+					
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+				
+				cartDetail.getItems().remove(selectedCart);
 			}else {
 				deleteAlert.show();
 				return;
 			}
+			
 		}else if (event.getSource() == checkout) {
 			if (cartDetail.getItems().isEmpty()) {
 				checkAlert.show();
