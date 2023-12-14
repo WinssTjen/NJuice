@@ -243,6 +243,15 @@ public class CustHome implements EventHandler<ActionEvent>{
 		checkout.setOnAction(this);
 		logoutBT.setOnAction(this);
 		addItemButton.setOnAction(this);
+		
+		juiceTypeName.setOnAction(e -> {
+			try {
+				getJuice();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		});
 	}
 
 	public void getData(String usernameHome) {
@@ -282,24 +291,99 @@ public class CustHome implements EventHandler<ActionEvent>{
 		}
 	}
 
-	public void comboJuice() {
+//	public void comboJuice() {
+//		String query = "SELECT JuiceName FROM msjuice";
+//		ResultSet rs = con.runQuery(query);
+//		juiceTypeName.getItems().clear();
+//
+//		try {
+//			while (rs.next()) {
+//				String name = rs.getString("JuiceName");
+//
+//				String query2 = "SELECT Price, JuiceDescription FROM msjuice WHERE JuiceName = ?";
+//
+//				juiceTypeName.getItems().add(name);
+//			}
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//
+//	}
+	
+	public void refreshTotalPrice() {
+		String selectedJuice = juiceTypeName.getValue();
+		
+		if (selectedJuice != null) {
+			String query = "SELECT Price FROM msjuice WHERE JuiceName = ?";
+
+			try {
+				con.setPreparedStatement(query);
+				con.preparedStatement.setString(1, selectedJuice);
+				ResultSet rs = con.executeQuery();
+
+				if (rs.next()) {
+					int price = rs.getInt("Price");
+					int selectedQty = qtySpinner.getValue();
+					int totalHarga = price * selectedQty;
+					juiceTotal.setText("Total Price: Rp. " + totalHarga);
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		} else {
+			juiceTotal.setText("Total Price : -");
+		}
+	}
+
+
+	public void getJuice() throws SQLException {
+	
 		String query = "SELECT JuiceName FROM msjuice";
 		ResultSet rs = con.runQuery(query);
-		juiceTypeName.getItems().clear();
-
-		try {
-			while (rs.next()) {
-				String name = rs.getString("JuiceName");
-
-				String query2 = "SELECT Price, JuiceDescription FROM msjuice WHERE JuiceName = ?";
-
-				juiceTypeName.getItems().add(name);
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		
+		while (rs.next()) {
+			String name = rs.getString("JuiceName");
+			juiceTypeName.getItems().add(name);
 		}
+		
+		if(juiceTypeName.getSelectionModel().isEmpty()) {
+		juicePrice.setText("Juice Price: -");
+		juiceDesc.setText("Description: -");
+		juiceTotal.setText("Total Price : -");
+		} 
+		
+		if(juiceTypeName.getSelectionModel().getSelectedItem() != null) {
+			if (juiceTypeName != null && qtySpinner != null) {
+				String selectedJuice = juiceTypeName.getValue();
+				String query1 = "SELECT JuiceDescription, Price FROM msjuice WHERE JuiceName = ?";
 
+				try {
+					con.setPreparedStatement(query1);
+					con.preparedStatement.setString(1, selectedJuice);
+					ResultSet rs1 = con.executeQuery();
+
+					if (rs1.next()) {
+						String desc = rs1.getString("JuiceDescription");
+						int price = rs1.getInt("Price");
+
+						juicePrice.setText("Juice Price: Rp. " + price);
+						juiceDesc.setText("Description: " + desc);
+
+						int selectedQty = qtySpinner.getValue();
+						int totalHarga = price * selectedQty;
+						qtySpinner.valueProperty().addListener((obs, oldVal, newVal) -> refreshTotalPrice());
+						juiceTotal.setText("Total Price: Rp. " + totalHarga);
+					}
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+
+
+
+
+		}
 	}
 
 //	public void getPrice() {
@@ -334,6 +418,7 @@ public class CustHome implements EventHandler<ActionEvent>{
 		refresh();
 		layout();
 		setEventHandler();
+		
 		primaryStage.setScene(sc);
 		this.primaryStage = primaryStage;
 		this.usernameHome = usernameHome;
@@ -372,8 +457,14 @@ public class CustHome implements EventHandler<ActionEvent>{
 	@Override
 	public void handle(ActionEvent event) {
 		if (event.getSource() == addItem) {
-			comboJuice();
+			try {
+				getJuice();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			openSecondaryWindow();
+			
 		}else if (event.getSource() == deleteItem) {
 			String selectedCart = cartDetail.getSelectionModel().getSelectedItem();
 			
