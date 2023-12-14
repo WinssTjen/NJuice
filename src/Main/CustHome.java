@@ -202,6 +202,7 @@ public class CustHome implements EventHandler<ActionEvent>{
 
 		// desc juice
 		vb2.getChildren().add(juiceDesc);
+		juiceDesc.setWrapText(true);
 		vb2.setSpacing(8);
 
 		// quantity juice
@@ -330,7 +331,8 @@ public class CustHome implements EventHandler<ActionEvent>{
 						int price = rs1.getInt("Price");
 
 						juicePrice.setText("Juice Price: Rp. " + price);
-						juiceDesc.setText("Description: " + desc);
+						juiceDesc.setText(desc);
+						juiceDesc.setMaxWidth(350);
 
 						int selectedQty = qtySpinner.getValue();
 						int totalHarga = price * selectedQty;
@@ -362,25 +364,72 @@ public class CustHome implements EventHandler<ActionEvent>{
 	}
 		
 	public void addData() {
+//		String getJuice = juiceTypeName.getValue();
+//		int getQty = qtySpinner.getValue();
+//		
+//		String query = "SELECT JuiceId FROM msjuice WHERE JuiceName ?";
+//		try {
+//			con.setPreparedStatement(query);
+//			con.preparedStatement.setString(1, getJuice);
+//			ResultSet rs = con.executeQuery();
+//			
+//			if (rs.next()) {
+//				String id = rs.getString("JuiceId");
+//				
+//				String query2 = String.format("INSERT INTO cartdetail VALUES (%s, %s, %d)", usernameHome, id, getQty);
+//				
+//				try {
+//	                con.setPreparedStatement(query2);
+//	                con.preparedStatement.setString(1, usernameHome);
+//	                con.preparedStatement.setString(2, id);
+//	                con.preparedStatement.setInt(3, getQty);
+//
+//	                con.runUpdate(query2);
+//	                
+//	                
+//	                getData(usernameHome);
+//	                refresh();
+//	            } catch (SQLException e) {
+//	                e.printStackTrace();
+//	            }
+//			}
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+
 		String getJuice = juiceTypeName.getValue();
-		int getQty = qtySpinner.getValue();
-		
-		String query = "SELECT JuiceId FROM msjuice WHERE JuiceName ?";
-		try {
-			con.setPreparedStatement(query);
-			con.preparedStatement.setString(1, getJuice);
-			ResultSet rs = con.executeQuery();
-			
-			if (rs.next()) {
-				String id = rs.getString("JuiceId");
-				
-				String query2 = String.format("INSERT INTO cartdetail VALUES (%s, %s, %d)", usernameHome, id, getQty);
-				con.runUpdate(query2);
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	    int getQty = qtySpinner.getValue();
+
+	    String query1 = "SELECT JuiceId FROM msjuice WHERE JuiceName = ?";
+	    try {
+	        con.setPreparedStatement(query1);
+	        con.preparedStatement.setString(1, getJuice);
+	        ResultSet rs = con.executeQuery();
+
+	        if (rs.next()) {
+	            String id = rs.getString("JuiceId");
+
+	            String query2 = "INSERT INTO cartdetail (Username, JuiceId, Quantity) VALUES ('" + usernameHome + "', '" + id + "', " + getQty + ")";
+	            
+	            try {
+	                con.setPreparedStatement(query2);
+	                con.preparedStatement.setString(1, usernameHome);
+	                con.preparedStatement.setString(2, id);
+	                con.preparedStatement.setInt(3, getQty);
+	                
+	                con.executeUpdate();
+
+	                getData(usernameHome);
+
+	                refresh();
+	            } catch (SQLException e) {
+	                e.printStackTrace();
+	            }
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
 		
 	}
 
