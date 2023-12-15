@@ -256,19 +256,20 @@ public class CustHome implements EventHandler<ActionEvent>{
 				con.preparedStatement.setString(1, usernameHome);
 				ResultSet rs = con.executeQuery();
 
+				int grandTotal = 0;
 				int total = 0;
 				while (rs.next()) {
 					Integer qty = rs.getInt("Quantity");
 					String JName = rs.getString("JuiceName");
 					Integer Jprice = rs.getInt("Price");
 
-					String CustCart = String.format("%dx - %s - [Rp.%d]", qty, JName, Jprice);
-
-					total += Jprice * qty;
+					total = Jprice * qty;
+					String CustCart = String.format("%dx - %s - [Rp.%d]", qty, JName, total);
+					grandTotal += total;
 
 					juiceData.add(CustCart);
-					price.setText("Total Price: " + total);
 				}
+				price.setText("Total Price: " + grandTotal);
 				
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
@@ -277,6 +278,11 @@ public class CustHome implements EventHandler<ActionEvent>{
 		}
 		greetLabel.setText("Hi, " + usernameHome);
 	}
+	
+	public void updJuiceData() {
+		juiceData.clear();
+		getData(usernameHome);
+		}
 
 	public void refresh() {
 		cartDetail.getItems().clear();
@@ -351,7 +357,7 @@ public class CustHome implements EventHandler<ActionEvent>{
 		}
 	}
 
-	void getComboBox(){
+	public void getComboBox(){
 		String query = "SELECT JuiceName FROM msjuice";
 		ResultSet rs = con.runQuery(query);
 
@@ -392,8 +398,6 @@ public class CustHome implements EventHandler<ActionEvent>{
 					con.preparedStatement.setString(2, usernameHome);
 					con.preparedStatement.setString(3, getJuice);
 					con.preparedStatement.executeUpdate();
-
-					System.out.println("Update berhasil");
 				} else {
 					String insertCart = "INSERT INTO cartdetail (Username, JuiceId, Quantity) VALUES "
 							+ "(?, (SELECT JuiceId FROM msjuice WHERE JuiceName = ?), ?)";
@@ -402,15 +406,42 @@ public class CustHome implements EventHandler<ActionEvent>{
 					con.preparedStatement.setString(2, getJuice);
 					con.preparedStatement.setInt(3, getQty);
 					con.preparedStatement.executeUpdate();
-
-					System.out.println("Insert berhasil");
 				}
+				updJuiceData();
+				refresh();
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
+	public void deleteData() {
+		String selectedCart = cartDetail.getSelectionModel().getSelectedItem();
+		String query = "DELETE FROM CARTDETAIL WHERE Username = ? AND JuiceId = (SELECT JuiceId FROM msjuice WHERE JuiceName = ?)";
+
+
+		int dashIndex = selectedCart.indexOf(" - ");
+		int priceIndex = selectedCart.indexOf(" - [Rp.");
+		try {
+
+			if (dashIndex != -1 && priceIndex != -1) {
+				String juiceName = selectedCart.substring(dashIndex + 3, priceIndex);
+				con.setPreparedStatement(query);
+				con.preparedStatement.setString(1, usernameHome);
+				con.preparedStatement.setString(2, juiceName);
+				con.preparedStatement.executeUpdate();
+
+				cartDetail.getItems().remove(selectedCart);
+				cartDetail.getSelectionModel().clearSelection();
+				
+				updJuiceData();
+				refresh();
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	public CustHome(Stage primaryStage, String usernameHome) {
 		initialize();
@@ -461,30 +492,8 @@ public class CustHome implements EventHandler<ActionEvent>{
 		if (event.getSource() == addItem) {
 			getComboBox();
 			openSecondaryWindow();
-
 		}else if (event.getSource() == deleteItem) {
-			String selectedCart = cartDetail.getSelectionModel().getSelectedItem();
-			String query = "DELETE FROM CARTDETAIL WHERE Username = ? AND JuiceId = (SELECT JuiceId FROM msjuice WHERE JuiceName = ?)";
-
-
-			int dashIndex = selectedCart.indexOf(" - ");
-			int priceIndex = selectedCart.indexOf(" - [Rp.");
-			try {
-
-				if (dashIndex != -1 && priceIndex != -1) {
-					String juiceName = selectedCart.substring(dashIndex + 3, priceIndex);
-					con.setPreparedStatement(query);
-					con.preparedStatement.setString(1, usernameHome);
-					con.preparedStatement.setString(2, juiceName);
-					con.preparedStatement.executeUpdate();
-
-					cartDetail.getItems().remove(selectedCart);
-					cartDetail.getSelectionModel().clearSelection();
-				}
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			deleteData();
 		}else if (event.getSource() == checkout) {
 			if (cartDetail.getItems().isEmpty()) {
 				checkAlert.show();
