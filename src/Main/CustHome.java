@@ -107,7 +107,7 @@ public class CustHome implements EventHandler<ActionEvent>{
 		yourCartLabel = new Label("Your Cart");
 		yourCartLabel.setFont(Font.font(null, FontWeight.BOLD, 50));
 		yourCartDescLabel = new Label();
-		price = new Label("Total Price: 190000");
+		price = new Label();
 		price.setFont(Font.font(null, FontWeight.SEMI_BOLD, 18));
 
 		// toolbar
@@ -130,14 +130,14 @@ public class CustHome implements EventHandler<ActionEvent>{
 
 		// label window
 		juiceLabel = new Label("Juice: ");
-		juiceLabel.setFont(Font.font(null, FontWeight.NORMAL, 15));
+		juiceLabel.setFont(Font.font(null, FontWeight.SEMI_BOLD, 15));
 		juicePrice = new Label();
-		juicePrice.setFont(Font.font(null, FontWeight.NORMAL, 15));
+		juicePrice.setFont(Font.font(null, FontWeight.SEMI_BOLD, 15));
 		juicePrice.setPadding(new Insets(10, 10, 10, 10));
 		juiceDesc = new Label();
-		juiceDesc.setFont(Font.font(null, FontWeight.SEMI_BOLD, 15));
+		juiceDesc.setFont(Font.font(null, FontWeight.BOLD, 15));
 		juiceQty = new Label("Quantity: ");
-		juiceQty.setFont(Font.font(null, FontWeight.NORMAL, 15));
+		juiceQty.setFont(Font.font(null, FontWeight.SEMI_BOLD, 15));
 		juiceTotal = new Label("Total Price: ");
 		juiceTotal.setFont(Font.font(null, FontWeight.NORMAL, 15));
 
@@ -256,14 +256,18 @@ public class CustHome implements EventHandler<ActionEvent>{
 				con.preparedStatement.setString(1, usernameHome);
 				ResultSet rs = con.executeQuery();
 
+				int total = 0;
 				while (rs.next()) {
 					Integer qty = rs.getInt("Quantity");
-					String juiceName = rs.getString("JuiceName");
-					Integer price = rs.getInt("Price");
+					String JName = rs.getString("JuiceName");
+					Integer Jprice = rs.getInt("Price");
 
-					String CustCart = String.format("%dx - %s - [Rp.%d]", qty, juiceName, price);
-
+					String CustCart = String.format("%dx - %s - [Rp.%d]", qty, JName, Jprice);
+					
+					total += Jprice * qty;
+					
 					juiceData.add(CustCart);
+					price.setText("Total Price: " + total);
 				}
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
@@ -364,73 +368,71 @@ public class CustHome implements EventHandler<ActionEvent>{
 	}
 		
 	public void addData() {
-//		String getJuice = juiceTypeName.getValue();
-//		int getQty = qtySpinner.getValue();
-//		
-//		String query = "SELECT JuiceId FROM msjuice WHERE JuiceName ?";
-//		try {
-//			con.setPreparedStatement(query);
-//			con.preparedStatement.setString(1, getJuice);
-//			ResultSet rs = con.executeQuery();
-//			
-//			if (rs.next()) {
-//				String id = rs.getString("JuiceId");
-//				
-//				String query2 = String.format("INSERT INTO cartdetail VALUES (%s, %s, %d)", usernameHome, id, getQty);
-//				
-//				try {
-//	                con.setPreparedStatement(query2);
-//	                con.preparedStatement.setString(1, usernameHome);
-//	                con.preparedStatement.setString(2, id);
-//	                con.preparedStatement.setInt(3, getQty);
-//
-//	                con.runUpdate(query2);
-//	                
-//	                
-//	                getData(usernameHome);
-//	                refresh();
-//	            } catch (SQLException e) {
-//	                e.printStackTrace();
-//	            }
-//			}
-//		} catch (SQLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-
 		String getJuice = juiceTypeName.getValue();
-	    int getQty = qtySpinner.getValue();
-
-	    String query1 = "SELECT JuiceId FROM msjuice WHERE JuiceName = ?";
-	    try {
-	        con.setPreparedStatement(query1);
-	        con.preparedStatement.setString(1, getJuice);
-	        ResultSet rs = con.executeQuery();
-
-	        if (rs.next()) {
-	            String id = rs.getString("JuiceId");
-
-	            String query2 = "INSERT INTO cartdetail (Username, JuiceId, Quantity) VALUES ('" + usernameHome + "', '" + id + "', " + getQty + ")";
-	            
-	            try {
+		System.out.println(getJuice);
+		int getQty = qtySpinner.getValue();
+		
+		String query = String.format("SELECT * FROM msjuice WHERE JuiceName = '%s'", getJuice);
+		try {
+			ResultSet rs = con.executeQuery();
+			while (rs.next()) {
+				String id = rs.getString("JuiceName");
+				System.out.println(id);
+				String query2 = String.format("INSERT INTO cartdetail VALUES ('%s', '%s', %d)", usernameHome, id, getQty);
+				
+				try {
 	                con.setPreparedStatement(query2);
 	                con.preparedStatement.setString(1, usernameHome);
 	                con.preparedStatement.setString(2, id);
 	                con.preparedStatement.setInt(3, getQty);
+
+	                con.runUpdate(query2);
 	                
-	                con.executeUpdate();
-
+	                
 	                getData(usernameHome);
-
 	                refresh();
 	            } catch (SQLException e) {
 	                e.printStackTrace();
 	            }
-	        }
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    }
-		
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+//		String getJuice = juiceTypeName.getValue();
+//	    int getQty = qtySpinner.getValue();
+//
+//	    String query1 = "SELECT JuiceId FROM msjuice WHERE JuiceName = ?";
+//	    try {
+//	        con.setPreparedStatement(query1);
+//	        con.preparedStatement.setString(1, getJuice);
+//	        ResultSet rs = con.executeQuery();
+//
+//	        if (rs.next()) {
+//	            String id = rs.getString("JuiceId");
+//
+//	            String query2 = "INSERT INTO cartdetail (Username, JuiceId, Quantity) VALUES ('" + usernameHome + "', '" + id + "', " + getQty + ")";
+//	            
+//	            try {
+//	                con.setPreparedStatement(query2);
+//	                con.preparedStatement.setString(1, usernameHome);
+//	                con.preparedStatement.setString(2, id);
+//	                con.preparedStatement.setInt(3, getQty);
+//	                
+//	                con.executeUpdate();
+//
+//	                getData(usernameHome);
+//
+//	                refresh();
+//	            } catch (SQLException e) {
+//	                e.printStackTrace();
+//	            }
+//	        }
+//	    } catch (SQLException e) {
+//	        e.printStackTrace();
+//	    }
+//		
 	}
 
 
