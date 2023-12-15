@@ -499,7 +499,7 @@ public class CustHome implements EventHandler<ActionEvent>{
 				checkAlert.show();
 				return;
 			}else {
-				Checkout ck = new Checkout(primaryStage);
+				Checkout ck = new Checkout(primaryStage, usernameHome);
 				ck.show();
 			}
 		}else if (event.getSource() == logoutBT) {
