@@ -263,12 +263,13 @@ public class CustHome implements EventHandler<ActionEvent>{
 					Integer Jprice = rs.getInt("Price");
 
 					String CustCart = String.format("%dx - %s - [Rp.%d]", qty, JName, Jprice);
-					
+
 					total += Jprice * qty;
-					
+
 					juiceData.add(CustCart);
 					price.setText("Total Price: " + total);
 				}
+				
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -349,11 +350,11 @@ public class CustHome implements EventHandler<ActionEvent>{
 			}
 		}
 	}
-	
+
 	void getComboBox(){
 		String query = "SELECT JuiceName FROM msjuice";
 		ResultSet rs = con.runQuery(query);
-		
+
 
 		try {
 			while (rs.next()) {
@@ -366,73 +367,48 @@ public class CustHome implements EventHandler<ActionEvent>{
 		}
 		getJuiceData();
 	}
-		
+
 	public void addData() {
 		String getJuice = juiceTypeName.getValue();
-		System.out.println(getJuice);
 		int getQty = qtySpinner.getValue();
-		
-		String query = String.format("SELECT * FROM msjuice WHERE JuiceName = '%s'", getJuice);
-		try {
-			ResultSet rs = con.executeQuery();
-			while (rs.next()) {
-				String id = rs.getString("JuiceName");
-				System.out.println(id);
-				String query2 = String.format("INSERT INTO cartdetail VALUES ('%s', '%s', %d)", usernameHome, id, getQty);
-				
-				try {
-	                con.setPreparedStatement(query2);
-	                con.preparedStatement.setString(1, usernameHome);
-	                con.preparedStatement.setString(2, id);
-	                con.preparedStatement.setInt(3, getQty);
 
-	                con.runUpdate(query2);
-	                
-	                
-	                getData(usernameHome);
-	                refresh();
-	            } catch (SQLException e) {
-	                e.printStackTrace();
-	            }
+		String query = "SELECT COUNT(JuiceId) AS count FROM cartdetail "
+				+ "WHERE Username = ? AND JuiceId = (SELECT JuiceId FROM msjuice WHERE JuiceName = ?)";
+
+		try {
+			con.setPreparedStatement(query);
+			con.preparedStatement.setString(1, usernameHome);
+			con.preparedStatement.setString(2, getJuice);
+			ResultSet rs = con.preparedStatement.executeQuery();
+
+			if (rs.next()) {
+				int count = rs.getInt("count");
+
+				if (count > 0) {
+					String updateQty = "UPDATE cartdetail SET Quantity = Quantity + ? "
+							+ "WHERE Username = ? AND JuiceId = (SELECT JuiceId FROM msjuice WHERE JuiceName = ?)";
+					con.setPreparedStatement(updateQty);
+					con.preparedStatement.setInt(1, getQty);
+					con.preparedStatement.setString(2, usernameHome);
+					con.preparedStatement.setString(3, getJuice);
+					con.preparedStatement.executeUpdate();
+
+					System.out.println("Update berhasil");
+				} else {
+					String insertCart = "INSERT INTO cartdetail (Username, JuiceId, Quantity) VALUES "
+							+ "(?, (SELECT JuiceId FROM msjuice WHERE JuiceName = ?), ?)";
+					con.setPreparedStatement(insertCart);
+					con.preparedStatement.setString(1, usernameHome);
+					con.preparedStatement.setString(2, getJuice);
+					con.preparedStatement.setInt(3, getQty);
+					con.preparedStatement.executeUpdate();
+
+					System.out.println("Insert berhasil");
+				}
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-//		String getJuice = juiceTypeName.getValue();
-//	    int getQty = qtySpinner.getValue();
-//
-//	    String query1 = "SELECT JuiceId FROM msjuice WHERE JuiceName = ?";
-//	    try {
-//	        con.setPreparedStatement(query1);
-//	        con.preparedStatement.setString(1, getJuice);
-//	        ResultSet rs = con.executeQuery();
-//
-//	        if (rs.next()) {
-//	            String id = rs.getString("JuiceId");
-//
-//	            String query2 = "INSERT INTO cartdetail (Username, JuiceId, Quantity) VALUES ('" + usernameHome + "', '" + id + "', " + getQty + ")";
-//	            
-//	            try {
-//	                con.setPreparedStatement(query2);
-//	                con.preparedStatement.setString(1, usernameHome);
-//	                con.preparedStatement.setString(2, id);
-//	                con.preparedStatement.setInt(3, getQty);
-//	                
-//	                con.executeUpdate();
-//
-//	                getData(usernameHome);
-//
-//	                refresh();
-//	            } catch (SQLException e) {
-//	                e.printStackTrace();
-//	            }
-//	        }
-//	    } catch (SQLException e) {
-//	        e.printStackTrace();
-//	    }
-//		
 	}
 
 
@@ -488,26 +464,27 @@ public class CustHome implements EventHandler<ActionEvent>{
 
 		}else if (event.getSource() == deleteItem) {
 			String selectedCart = cartDetail.getSelectionModel().getSelectedItem();
+			String query = "DELETE FROM CARTDETAIL WHERE Username = ? AND JuiceId = (SELECT JuiceId FROM msjuice WHERE JuiceName = ?)";
 
-			if (cartDetail.getSelectionModel().getSelectedItem() != null) {
-				String query = "DELETE * FROM cartdetail WHERE Username ? AND JuiceID IN (SELECT JuiceName FROM msjuice WHERE JuiceName ?)";
-				ResultSet rs = con.executeQuery();
 
-				try {
+			int dashIndex = selectedCart.indexOf(" - ");
+			int priceIndex = selectedCart.indexOf(" - [Rp.");
+			try {
+
+				if (dashIndex != -1 && priceIndex != -1) {
+					String juiceName = selectedCart.substring(dashIndex + 3, priceIndex);
+					con.setPreparedStatement(query);
 					con.preparedStatement.setString(1, usernameHome);
-					//					con.preparedStatement.setString(2, );
+					con.preparedStatement.setString(2, juiceName);
+					con.preparedStatement.executeUpdate();
 
-
-				} catch (Exception e) {
-					// TODO: handle exception
+					cartDetail.getItems().remove(selectedCart);
+					cartDetail.getSelectionModel().clearSelection();
 				}
-
-				cartDetail.getItems().remove(selectedCart);
-			}else {
-				deleteAlert.show();
-				return;
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-
 		}else if (event.getSource() == checkout) {
 			if (cartDetail.getItems().isEmpty()) {
 				checkAlert.show();
@@ -520,7 +497,7 @@ public class CustHome implements EventHandler<ActionEvent>{
 			Login login = new Login(primaryStage);
 			login.show();
 		}
-		
+
 		if (event.getSource() == juiceTypeName) {
 			getJuiceData();
 		}
@@ -528,7 +505,7 @@ public class CustHome implements EventHandler<ActionEvent>{
 		if (event.getSource() == addItemButton) {
 			addData();
 		}
-		
+
 	}
 
 }
