@@ -2,7 +2,6 @@ package Main;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -34,7 +33,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import jfxtras.labs.scene.control.window.Window;
-import model.Cart;
 
 public class CustHome implements EventHandler<ActionEvent>{
 	Scene sc;
@@ -42,7 +40,7 @@ public class CustHome implements EventHandler<ActionEvent>{
 	GridPane gp;
 	StackPane sp, sp2;
 	VBox vb, vb2;
-	HBox hb, hb2, hb3;
+	HBox hb, hb2, hb3, hb4;
 	Button logoutBT, addItem, deleteItem, checkout;
 	Label yourCartLabel, yourCartDescLabel, greetLabel, cartName, cartPrice, price;
 	ToolBar tb;
@@ -76,6 +74,7 @@ public class CustHome implements EventHandler<ActionEvent>{
 		vb = new VBox();
 		hb = new HBox();
 		hb2 = new HBox();
+		hb4 = new HBox();
 		sc = new Scene(bp, 1000, 750);
 
 		// spacing
@@ -164,27 +163,16 @@ public class CustHome implements EventHandler<ActionEvent>{
 		vb.getChildren().addAll(yourCartLabel);
 		vb.setAlignment(Pos.CENTER);
 		vb.setSpacing(10);
+		
+		hb2.setAlignment(Pos.CENTER);
 
-		if (cartDetail.getItems().isEmpty()) {
-			vb.getChildren().addAll(yourCartDescLabel);
-			vb.setAlignment(Pos.CENTER);
-			vb.setSpacing(14);
-		}else {
-			hb2.getChildren().addAll(space4, cartDetail, space5);
-			hb2.setAlignment(Pos.CENTER);
+		vb.getChildren().add(hb2);
 
-			vb.getChildren().add(hb2);
-
-			vb.getChildren().add(price);
-			vb.setAlignment(Pos.CENTER);
-			vb.setSpacing(15);	
-		}
-
-		hb.getChildren().addAll(addItem, deleteItem, checkout);
-		hb.setAlignment(Pos.CENTER);
-		hb.setSpacing(12);
+		hb4.setAlignment(Pos.CENTER);
+		vb.getChildren().add(hb4);
+		
 		vb.getChildren().add(hb);
-
+		
 		bp.setTop(tb);
 		bp.setCenter(vb);
 	}
@@ -270,7 +258,7 @@ public class CustHome implements EventHandler<ActionEvent>{
 					juiceData.add(CustCart);
 				}
 				price.setText("Total Price: " + grandTotal);
-				
+
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -278,20 +266,37 @@ public class CustHome implements EventHandler<ActionEvent>{
 		}
 		greetLabel.setText("Hi, " + usernameHome);
 	}
-	
+
 	public void updJuiceData() {
 		juiceData.clear();
 		getData(usernameHome);
-		}
+	}
 
 	public void refresh() {
+		hb4.getChildren().clear();
+		hb2.getChildren().clear();
+		hb.getChildren().clear();
+		
 		cartDetail.getItems().clear();
 		if (juiceData.isEmpty()) {
-			//			vb.getChildren().addAll(yourCartDescLabel);
 			yourCartDescLabel.setText("Your cart is empty, try adding items!");
-		}else {
-			//			vb.getChildren().addAll(yourCartLabel, cartDetail);
+			hb2.getChildren().add(yourCartDescLabel);
+			
+			hb.getChildren().addAll(addItem, deleteItem, checkout);
+			hb.setAlignment(Pos.CENTER);
+			hb.setSpacing(12);
+		}else if (!juiceData.isEmpty()){
 			cartDetail.getItems().setAll(juiceData);
+			hb2.getChildren().add(cartDetail);	
+			
+			hb4.getChildren().add(price);
+			hb4.setAlignment(Pos.CENTER);
+			hb4.setSpacing(15);	
+			
+			hb.getChildren().addAll(addItem, deleteItem, checkout);
+			hb.setAlignment(Pos.CENTER);
+			hb.setSpacing(12);
+			
 		}
 	}
 
@@ -433,7 +438,7 @@ public class CustHome implements EventHandler<ActionEvent>{
 
 				cartDetail.getItems().remove(selectedCart);
 				cartDetail.getSelectionModel().clearSelection();
-				
+
 				updJuiceData();
 				refresh();
 			}
