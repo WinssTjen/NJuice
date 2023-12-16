@@ -88,12 +88,12 @@ public class ManageProduct implements EventHandler<ActionEvent>{
 		comboID = new ComboBox<String>();
 		comboID.getSelectionModel().selectFirst();
 
+		// spinner
+		inputPrice = new Spinner<Integer>();
+		
 		// text field
 		inputName = new TextField();
 		inputName.setPromptText("Insert product name to be created");
-
-		// spinner
-		inputPrice = new Spinner<Integer>();
 
 		// text area
 		inputDesc = new TextArea();
