@@ -415,6 +415,9 @@ public class CustHome implements EventHandler<ActionEvent>{
 				}
 				updJuiceData();
 				refresh();
+				
+				juiceTypeName.setValue(null);
+				qtySpinner.getValueFactory().setValue(1);;
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -501,7 +504,7 @@ public class CustHome implements EventHandler<ActionEvent>{
 		}else if (event.getSource() == deleteItem) {
 			if(cartDetail.getItems().isEmpty()) {
 			} else if (cartDetail.getSelectionModel().isEmpty()){
-				deleteAlert.show();				
+				deleteAlert.show();			
 			} else {
 				deleteData();
 			}
