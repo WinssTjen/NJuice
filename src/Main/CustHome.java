@@ -163,16 +163,16 @@ public class CustHome implements EventHandler<ActionEvent>{
 		vb.getChildren().addAll(yourCartLabel);
 		vb.setAlignment(Pos.CENTER);
 		vb.setSpacing(10);
-		
+
 		hb2.setAlignment(Pos.CENTER);
 
 		vb.getChildren().add(hb2);
 
 		hb4.setAlignment(Pos.CENTER);
 		vb.getChildren().add(hb4);
-		
+
 		vb.getChildren().add(hb);
-		
+
 		bp.setTop(tb);
 		bp.setCenter(vb);
 	}
@@ -276,27 +276,27 @@ public class CustHome implements EventHandler<ActionEvent>{
 		hb4.getChildren().clear();
 		hb2.getChildren().clear();
 		hb.getChildren().clear();
-		
+
 		cartDetail.getItems().clear();
 		if (juiceData.isEmpty()) {
 			yourCartDescLabel.setText("Your cart is empty, try adding items!");
 			hb2.getChildren().add(yourCartDescLabel);
-			
+
 			hb.getChildren().addAll(addItem, deleteItem, checkout);
 			hb.setAlignment(Pos.CENTER);
 			hb.setSpacing(12);
 		}else if (!juiceData.isEmpty()){
 			cartDetail.getItems().setAll(juiceData);
 			hb2.getChildren().add(cartDetail);	
-			
+
 			hb4.getChildren().add(price);
 			hb4.setAlignment(Pos.CENTER);
 			hb4.setSpacing(15);	
-			
+
 			hb.getChildren().addAll(addItem, deleteItem, checkout);
 			hb.setAlignment(Pos.CENTER);
 			hb.setSpacing(12);
-			
+
 		}
 	}
 
@@ -363,6 +363,7 @@ public class CustHome implements EventHandler<ActionEvent>{
 	}
 
 	public void getComboBox(){
+		juiceTypeName.getItems().clear();
 		String query = "SELECT JuiceName FROM msjuice";
 		ResultSet rs = con.runQuery(query);
 
@@ -498,7 +499,12 @@ public class CustHome implements EventHandler<ActionEvent>{
 			getComboBox();
 			openSecondaryWindow();
 		}else if (event.getSource() == deleteItem) {
-			deleteData();
+			if(cartDetail.getItems().isEmpty()) {
+			} else if (cartDetail.getSelectionModel().isEmpty()){
+				deleteAlert.show();				
+			} else {
+				deleteData();
+			}
 		}else if (event.getSource() == checkout) {
 			if (cartDetail.getItems().isEmpty()) {
 				checkAlert.show();
