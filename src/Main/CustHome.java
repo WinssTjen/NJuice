@@ -38,7 +38,6 @@ public class CustHome implements EventHandler<ActionEvent>{
 	Scene sc;
 	BorderPane bp, bp2;
 	GridPane gp;
-	StackPane sp, sp2;
 	VBox vb, vb2;
 	HBox hb, hb2, hb3, hb4;
 	Button logoutBT, addItem, deleteItem, checkout;
@@ -70,7 +69,6 @@ public class CustHome implements EventHandler<ActionEvent>{
 		// scene & layout & window
 		bp = new BorderPane();
 		gp = new GridPane();
-		sp = new StackPane();
 		vb = new VBox();
 		hb = new HBox();
 		hb2 = new HBox();
@@ -477,8 +475,7 @@ public class CustHome implements EventHandler<ActionEvent>{
 		addWindow.setPrefHeight(500);
 		addWindow.setPrefWidth(1000);
 		addWindow.setBackground(background);
-		bp2 = new BorderPane();
-		sp = new StackPane();
+		bp2 = new BorderPane();w
 		vb2 = new VBox();
 		hb3= new HBox();
 
