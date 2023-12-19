@@ -1,3 +1,3 @@
 # NJuice
-Project Bussiness Application Development Group 9 NJuice
+Project Bussiness Application Development
 =======
