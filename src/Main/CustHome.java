@@ -475,7 +475,7 @@ public class CustHome implements EventHandler<ActionEvent>{
 		addWindow.setPrefHeight(500);
 		addWindow.setPrefWidth(1000);
 		addWindow.setBackground(background);
-		bp2 = new BorderPane();w
+		bp2 = new BorderPane();
 		vb2 = new VBox();
 		hb3= new HBox();
 
