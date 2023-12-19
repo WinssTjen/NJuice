@@ -23,7 +23,6 @@ public class ViewTrans implements EventHandler<ActionEvent>{
 
 	Scene scene;
 	BorderPane bp;	
-	GridPane gp;
 	ScrollPane sp;
 	MenuBar mb;
 	Menu menu1, menu2;
@@ -44,7 +43,6 @@ public class ViewTrans implements EventHandler<ActionEvent>{
 
 	void menu() {
 		bp = new BorderPane();
-		gp = new GridPane();
 		sp = new ScrollPane();
 		mb = new MenuBar();
 		menu1 = new Menu("Admins' Dashboard");

@@ -37,7 +37,6 @@ import jfxtras.labs.scene.control.window.Window;
 public class CustHome implements EventHandler<ActionEvent>{
 	Scene sc;
 	BorderPane bp, bp2;
-	GridPane gp;
 	VBox vb, vb2;
 	HBox hb, hb2, hb3, hb4;
 	Button logoutBT, addItem, deleteItem, checkout;
@@ -68,7 +67,6 @@ public class CustHome implements EventHandler<ActionEvent>{
 	void initialize() {
 		// scene & layout & window
 		bp = new BorderPane();
-		gp = new GridPane();
 		vb = new VBox();
 		hb = new HBox();
 		hb2 = new HBox();

@@ -3,7 +3,6 @@ package Main;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
